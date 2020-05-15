@@ -1,0 +1,3 @@
+SUBSYSTEMS=="usb", ATTRS{idProduct}=="0101", ATTRS{idVendor}=="2d40", MODE="0660", SYMLINK+="vzense-imu", GROUP="plugdev"
+SUBSYSTEMS=="usb", ATTRS{idProduct}=="0103", ATTRS{idVendor}=="2d40", MODE="0660", SYMLINK+="vzense-hid", GROUP="plugdev"
+
