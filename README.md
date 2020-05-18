@@ -1,17 +1,23 @@
-#VZenseSDK_Windows
+VzenseSDK_Linux
 
-## VZense TOF camera software develop kit for windows system
+## Vzense TOF Camera Software Develop Kit For Linux System
 
 ### Supported Devices
 
 - DCAM710
 - DCAM800
-- DCAM800lite
+- DCAM800Lite
 
-#### Summary of the guidelines:
+### Summary Of The Guidelines
 
 - Choose the right base branch;
 
 - Include sample project and documentation;
 
-  
+### Resources
+
+- Homepage: https://www.vzense.com/
+- Order: https://www.vzense.com/
+- Docs:
+- Develop tools: https://github.com/Vzense , https://gitee.com/Vzense
+- Q&A forum: 
