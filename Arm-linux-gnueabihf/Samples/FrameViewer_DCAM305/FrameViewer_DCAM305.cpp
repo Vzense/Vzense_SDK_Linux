@@ -1,4 +1,4 @@
-//Note:DCAM800 has no RGB frame and no use DCAM_305 in Vzense_dcamtype.h
+//Note:use DCAM_305 in Vzense_dcamtype.h
 
 #include <iostream>
 #include <fstream>
@@ -33,16 +33,13 @@ static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, c
 
 int main(int argc, char *argv[])
 {
-#ifdef DCAM_305
-	return 0;
-#else
 	PsReturnStatus status;
 	uint32_t deviceIndex = 0;
 	uint32_t deviceCount = 0;
 	uint32_t slope = 1450;
 	uint32_t wdrSlope = 4400;
 	PsDepthRange depthRange = PsNearRange;
-	PsDataMode dataMode = PsDepthAndIR_30;
+	PsDataMode dataMode = PsDepthAndIR15_RGB30;
  
 	status = Ps2_Initialize();
 	if (status != PsReturnStatus::PsRetOK)
@@ -51,21 +48,13 @@ int main(int argc, char *argv[])
 		system("pause");
 		return -1;
 	}
-
 GET:
 	status = Ps2_GetDeviceCount(&deviceCount);
 	if (status != PsReturnStatus::PsRetOK)
 	{
-		cout << "PsGetDeviceCount failed!" << endl;
-
-#ifdef DCAM_800
-		this_thread::sleep_for(chrono::seconds(1));
-		goto GET;
-#else
+		cout << "PsGetDeviceCount failed!" << endl; 
 		system("pause");
 		return -1;
-#endif
-	
 	}
 	cout << "Get device count: " << deviceCount << endl;
 	if (0 == deviceCount)
@@ -92,13 +81,6 @@ GET:
 		cout << "Ps2_SetDataMode failed!" << endl;
 	else
 		cout << "Set Data Mode to PsDepthAndIR_30" << endl;
-
-	//Set the Depth Range to Near through Ps2_SetDepthRange interface
-	status = Ps2_SetDepthRange(deviceHandle, sessionIndex, PsNearRange);
-	if (status != PsReturnStatus::PsRetOK)
-		cout << "Ps2_SetDepthRange failed!" << endl;
-	else
-		cout << "Set Depth Range to Near" << endl;
 
 	//Enable the Depth and RGB synchronize feature
 	Ps2_SetSynchronizeEnabled(deviceHandle, sessionIndex, true);
@@ -186,7 +168,6 @@ GET:
 	PsDepthVector3 DepthVector = { 0, 0, 0 };
 	PsVector3f WorldVector = { 0.0f };
 
-	bool f_bWDRMode = false;
 	bool f_bSync = false;
 
 	status = Ps2_GetDataMode(deviceHandle, sessionIndex, &dataMode);
@@ -194,11 +175,7 @@ GET:
 		cout << "Ps2_GetDataMode failed!" << endl;
 	else
 		cout << "Get Ps2_GetDataMode : " << dataMode << endl;
-	if (dataMode == PsWDR_Depth)
-	{
-		f_bWDRMode = true;
-	}
-#ifndef DCAM_800
+
 
 	//Set PixelFormat as PsPixelFormatBGR888 for opencv display
 	Ps2_SetColorPixelFormat(deviceHandle, sessionIndex, PsPixelFormatBGR888);
@@ -220,22 +197,21 @@ GET:
 
 	const string rgbImageWindow = "RGB Image";
 	const string mappedDepthImageWindow = "MappedDepth Image";
-	const string mappedRgbImageWindow = "MappedRGB Image"; 
+	const string mappedIRImageWindow = "MappedIR Image";
+	const string mappedRgbImageWindow = "MappedRGB Image";
 	bool f_bMappedRGB = true;
-	bool f_bMappedDepth = true;
-#endif
+	bool f_bMappedDepth = false;
+	bool f_bMappedIR = false;
+ 
 	cout << "\n--------------------------------------------------------------------" << endl;
 	cout << "--------------------------------------------------------------------" << endl;
 	cout << "Press following key to set corresponding feature:" << endl;
-	cout << "0/1/2...: Change depth range Near/Middle/Far..." << endl;
 	cout << "S/s: Enable or disable the Depth and RGB synchronize feature " << endl;
 	cout << "P/p: Save point cloud data into PointCloud.txt in current directory" << endl;
 	cout << "T/t: Change background filter threshold value" << endl;
-#ifndef DCAM_800
 	cout << "M/m: Change data mode: input corresponding index in terminal:" << endl;
-	cout << "                    0: Output Depth and RGB in 30 fps" << endl;
-	cout << "                    1: Output IR and RGB in 30 fps" << endl;
-	cout << "                    2: Output Depth and IR in 30 fps" << endl;
+	cout << "                    0: Output Depth and IR in 15 fps, and RGB in 30fps" << endl;
+	cout << "                    1: Output RGB in 30 fps" << endl;
 	cout << "                    3: Output Depth/IR frames alternatively in 15fps, and RGB in 30fps" << endl;
 	cout << "                    4: Output WDR_Depth and RGB in 30 fps" << endl;
 	cout << "R/r: Change the RGB resolution: input corresponding index in terminal:" << endl;
@@ -244,16 +220,8 @@ GET:
 	cout << "                             2: 640*480" << endl;
 	cout << "                             3: 640*360" << endl;
 	cout << "Q/q: Enable or disable the mapped RGB in Depth space" << endl;
-	cout << "L/l: Enable or disable the mapped Depth in RGB space" << endl;
-	cout << "V/v: Enable or disable the WDR depth fusion feature " << endl;
-#else
-	cout << "M/m: Change data mode: input corresponding index in terminal:" << endl;
-	cout << "                    0: Output Depth in 30 fps" << endl;
-	cout << "                    1: Output IR in 30 fps" << endl;
-	cout << "                    2: Output Depth and IR in 30 fps" << endl;
-	cout << "                    3: Output WDR_Depth in 30 fps" << endl;
-#endif
- 
+	cout << "L/l: Enable or disable the mapped Depth in RGB space" << endl; 
+	cout << "J/j: Enable or disable the mapped IR in RGB space" << endl;
 	cout << "Esc: Program quit " << endl;
 	cout << "--------------------------------------------------------------------" << endl;
 	cout << "--------------------------------------------------------------------\n" << endl;
@@ -262,13 +230,10 @@ GET:
 	{
 		PsFrame depthFrame = { 0 };
 		PsFrame irFrame = { 0 };
-		PsFrame wdrDepthFrame = { 0 };
-
-#ifndef DCAM_800
 		PsFrame rgbFrame = { 0 };
 		PsFrame mappedDepthFrame = { 0 };
+		PsFrame mappedIRFrame = { 0 };
 		PsFrame mappedRGBFrame = { 0 };
-#endif
 
 		// Read one frame before call PsGetFrame
 		PsFrameReady frameReady = { 0 };
@@ -316,25 +281,6 @@ GET:
 			}
 		}
 
-		//Get WDR depth frame(fusion or alternatively, determined by Ps2_SetWDRStyle, default in fusion)
-		//WDR depth frame only output in PsWDR_Depth data mode
-		if (1 == frameReady.wdrDepth)
-		{
-			status = Ps2_GetFrame(deviceHandle, sessionIndex, PsWDRDepthFrame, &wdrDepthFrame);
-			if (wdrDepthFrame.pFrameData != NULL)
-			{
-				//Display the WDR Depth Image
-				Opencv_Depth(wdrSlope, wdrDepthFrame.height, wdrDepthFrame.width, wdrDepthFrame.pFrameData, imageMat);
-				cv::imshow(wdrDepthImageWindow, imageMat);
-			}
-			else
-			{
-				cout << "Ps2_GetFrame PsWDRDepthFrame status:" << status << " pFrameData is NULL " << endl;
-			}
-		}
-
-#ifndef DCAM_800
-
 		//Get RGB frame, RGB frame only output in following data mode
 		if (1 == frameReady.rgb)
 		{
@@ -365,7 +311,7 @@ GET:
 				//Display the MappedDepth Image
 				imageMat = cv::Mat(mappedDepthFrame.height, mappedDepthFrame.width, CV_16UC1, mappedDepthFrame.pFrameData);
 				cv::Mat mappedDepthMat;
-				imageMat.convertTo(mappedDepthMat, CV_8U, 255.0 / (f_bWDRMode ? wdrSlope : slope));
+				imageMat.convertTo(mappedDepthMat, CV_8U, 255.0 / slope);
 				cv::applyColorMap(mappedDepthMat, mappedDepthMat, cv::COLORMAP_RAINBOW);
 				cv::imshow(mappedDepthImageWindow, mappedDepthMat);
 			}
@@ -374,7 +320,26 @@ GET:
 				cout << "Ps2_GetFrame PsMappedDepthFrame status:" << status << " pFrameData is NULL " << endl;
 			}
 		}
+		//Get mapped ir frame which is mapped to rgb camera space
+		//Mapped ir frame only output in following data mode
+		//And can only get when the feature is enabled through api Ps2_SetMapperEnabledRGBToIR
+		//When the key "J/j" pressed, this feature enable or disable
+		if (1 == frameReady.mappedIR)
+		{
+			status = Ps2_GetFrame(deviceHandle, sessionIndex, PsMappedIRFrame, &mappedIRFrame);
 
+			if (mappedIRFrame.pFrameData != NULL)
+			{
+				//Display the MappedDepth Image
+				imageMat = cv::Mat(mappedIRFrame.height, mappedIRFrame.width, CV_16UC1, mappedIRFrame.pFrameData);
+				imageMat.convertTo(imageMat, CV_8U, 255.0 / 3840);
+				cv::imshow(mappedIRImageWindow, imageMat);
+			}
+			else
+			{
+				cout << "Ps2_GetFrame PsMappedIRFrame status:" << status << " pFrameData is NULL " << endl;
+			}
+		}
 		//Get mapped rgb frame which is mapped to depth camera space
 		//Mapped rgb frame only output in following data mode
 		//And can only get when the feature is enabled through api Ps2_SetMapperEnabledDepthToRGB
@@ -394,20 +359,15 @@ GET:
 				cout << "Ps2_GetFrame PsMappedRGBFrame status:" << status << " pFrameData is NULL " << endl;
 			}
 		}
-#endif
+
 	KEY:
 		unsigned char key = waitKey(1);
 		imageMat.release();
 
 		if (key == 'M' || key == 'm')
 		{
-#ifdef DCAM_800
-			cout << "Selection: 0:Depth_30; 1:Ir_30; 2:DepthAndIR_30; 3:WDR_Depth" << endl;
-#else
-			cout << "Selection: 0:DepthAndRgb_30; 1:IrAndRgb_30; 2:DepthAndIR_30; 3:PsDepthAndIR_15_RGB_30; 4:WDR_Depth" << endl;
-#endif
-
-		
+			cout << "Selection: 0:PsDepthAndIR15_RGB30; 1:Rgb_30; 2:StandBy" << endl;
+	
 			int index = -1;
 			cin >> index;
 			//clear buffer and cin flag. if not, cin will not get input anymore;
@@ -423,183 +383,37 @@ GET:
 				cin.clear();
 				cin.ignore(1024, '\n');
 			}
-#ifdef DCAM_800
+ 
 			switch (index)
 			{
 			case 0:
-				dataMode = PsDepth_30;
+				dataMode = PsDepthAndIR15_RGB30;
 				break;
 			case 1:
-				dataMode = PsIR_30;
+				dataMode = PsRGB30;
 				break;
 			case 2:
-				dataMode = PsDepthAndIR_30;
-				break;
-			case 3:
-				dataMode = PsWDR_Depth;
+				dataMode = PsStandBy;
 				break;
 			default:
 				cout << "Unsupported data mode!" << endl;
 				continue;
 			}
-#else
-			switch (index)
-			{
-			case 0:
-				dataMode = PsDepthAndRGB_30;
-				break;
-			case 1:
-				dataMode = PsIRAndRGB_30;
-				break;
-			case 2:
-				dataMode = PsDepthAndIR_30;
-				break;
-			case 3:
-				dataMode = PsDepthAndIR_15_RGB_30;
-				break;
-			case 4:
-				dataMode = PsWDR_Depth;
-				break;
-			default:
-				cout << "Unsupported data mode!" << endl;
-				continue;
-			}
-#endif			
 
 			status = Ps2_SetDataMode(deviceHandle, sessionIndex, (PsDataMode)dataMode);
 			if (status != PsRetOK)
 			{
 				cout << "Ps2_SetDataMode  status" << status << endl;
 			}
-			if (dataMode == PsWDR_Depth)
-			{
-				//Set WDR Output Mode, two ranges Near/Far output from device every one frame, no care for range3 and range3Count in PsWDRTotalRange_Two
-				PsWDROutputMode wdrMode = { PsWDRTotalRange_Two, PsNearRange, 1, PsFarRange, 1, PsNearRange, 1 };
-				//PsWDROutputMode wdrMode = { PsWDRTotalRange_Three, PsNearRange, 1, PsMidRange, 1, PsFarRange, 1 };
-				Ps2_SetWDROutputMode(deviceHandle, sessionIndex, &wdrMode);
-				f_bWDRMode = true;
-			}
-			else
-			{
-				f_bWDRMode = false;
-			}
 		}
-		else if ((key == '0') || (key == '1') || (key == '2') || (key == '3') || (key == '4') || (key == '5') || (key == '6') || (key == '7') || (key == '8'))
-		{
-			switch (key)
-			{
-			case '0':
-				depthRange = PsNearRange;
-				slope = 1450;
-				break;
-			case '1':
-				depthRange = PsMidRange;
-				slope = 3000;
-				break;
-			case '2':
-				depthRange = PsFarRange;
-				slope = 4400;
-				break;
-			case '3':
-				depthRange = PsXNearRange;
-				slope = 4800;
-				break;
-			case '4':
-				depthRange = PsXMidRange;
-				slope = 5600;
-				break;
-			case '5':
-				depthRange = PsXFarRange;
-				slope = 7500;
-				break;
-			case '6':
-				depthRange = PsXXNearRange;
-				slope = 9600;
-				break;
-			case '7':
-				depthRange = PsXXMidRange;
-				slope = 11200;
-				break;
-			case '8':
-				depthRange = PsXXFarRange;
-				slope = 15000;
-				break;
-			default:
-				cout << "Unsupported Range!" << endl;
-				continue;
-			}
-			status = Ps2_SetDepthRange(deviceHandle, sessionIndex, depthRange);
-			if (depthRange == PsNearRange)
-				cout << "Set depth range to Near," << " status: " << status << endl;
-			else if (depthRange == PsMidRange)
-				cout << "Set depth range to Mid," << " status: " << status << endl;
-			else if (depthRange == PsFarRange)
-				cout << "Set depth range to Far," << " status: " << status << endl;
-			else if (depthRange == PsXNearRange)
-				cout << "Set depth range to XNearRange," << " status: " << status << endl;
-			else if (depthRange == PsXMidRange)
-				cout << "Set depth range to XMidRange," << " status: " << status << endl;
-			else if (depthRange == PsXFarRange)
-				cout << "Set depth range to XFarRange," << " status: " << status << endl;
-			else if (depthRange == PsXXNearRange)
-				cout << "Set depth range to XXNearRange," << " status: " << status << endl;
-			else if (depthRange == PsXXMidRange)
-				cout << "Set depth range to XXMidRange," << " status: " << status << endl;
-			else if (depthRange == PsXXFarRange)
-				cout << "Set depth range to XXFarRange," << " status: " << status << endl;
-
-			if (status != PsRetOK)
-			{
-				cout << "Set depth range failed! " << endl;
-			}
-
-			status = Ps2_GetDepthRange(deviceHandle, sessionIndex, &depthRange);
-			cout << "Get depth range," << " depthRange: " << depthRange << endl;
-			if (status != PsRetOK)
-			{
-				cout << "Get depth range failed! " << endl;
-			}
-			else
-			{
-				status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, depthRange, &measuringrange);
-				if (status != PsReturnStatus::PsRetOK)
-					cout << "Ps2_GetMeasuringRange failed!" << endl;
-				else
-				{
-					switch (depthRange)
-					{
-					case PsNearRange:
-					case PsXNearRange:
-					case PsXXNearRange:
-						slope = measuringrange.effectDepthMaxNear;
-						break;
-
-					case PsMidRange:
-					case PsXMidRange:
-					case PsXXMidRange:
-						slope = measuringrange.effectDepthMaxMid;
-						break;
-
-					case PsFarRange:
-					case PsXFarRange:
-					case PsXXFarRange:
-
-						slope = measuringrange.effectDepthMaxFar;
-						break;
-					default:
-						break;
-					}
-					cout << "slope  ==  " << slope << endl;
-				}
-			}
-		}		
+	
 		else if (key == 'P' || key == 'p')
 		{
 			//Save the pointcloud
-			if (depthFrame.pFrameData != NULL || wdrDepthFrame.pFrameData != NULL)
+			if (depthFrame.pFrameData != NULL )
 			{
 				PointCloudWriter.open("PointCloud.txt");
-				PsFrame &srcFrame = (f_bWDRMode ? wdrDepthFrame : depthFrame);
+				PsFrame &srcFrame = depthFrame;
 				const int len = srcFrame.width * srcFrame.height;
 				PsVector3f* worldV = new PsVector3f[len];
 
@@ -640,26 +454,11 @@ GET:
 				f_bSync = !f_bSync;
 			}
 		}
-		else if (key == 'V' || key == 'v')
-		{
-			static bool bWDRStyle = true;
-			status = Ps2_SetWDRStyle(deviceHandle, sessionIndex, bWDRStyle ? PsWDR_ALTERNATION : PsWDR_FUSION);
-			if (PsRetOK == status)
-			{
-				cout << "WDR image output " << (bWDRStyle ? "alternatively in multi range." : "Fusion.") << endl;
-				bWDRStyle = !bWDRStyle;
-			}
-			else
-			{
-				cout << "Set WDR Style " << (bWDRStyle ? PsWDR_ALTERNATION : PsWDR_FUSION) << "  satus : " << status << endl;
-			}
-		}
 		else if (key == 27)	//ESC Pressed
 		{
 			break;
 		}
-#ifndef DCAM_800
-		else if (key == 'R' || key == 'r')
+ 		else if (key == 'R' || key == 'r')
 		{
 			cout << "please select RGB resolution to set: 0:1080P; 1:720P; 2:480P; 3:360P" << endl;
 			int index = 0;
@@ -693,6 +492,15 @@ GET:
 			}
 			Ps2_SetRGBResolution(deviceHandle, sessionIndex, resolution);
 		}
+		else if (key == 'J' || key == 'j')
+		{
+			status = Ps2_SetMapperEnabledRGBToIR(deviceHandle, sessionIndex, f_bMappedIR);
+			if (status == PsRetOK)
+			{
+				cout << "Set Mapper RGBToIR " << (f_bMappedIR ? "Enabled." : "Disabled.") << endl;
+				f_bMappedIR = !f_bMappedIR;
+			}
+		}
 		else if (key == 'L' || key == 'l')
 		{
 			status = Ps2_SetMapperEnabledRGBToDepth(deviceHandle, sessionIndex, f_bMappedDepth);
@@ -711,7 +519,6 @@ GET:
 				f_bMappedRGB = !f_bMappedRGB;
 			}
 		}
-#endif	
 	}
 
 	status = Ps2_CloseDevice(deviceHandle);
@@ -720,6 +527,5 @@ GET:
 	status = Ps2_Shutdown();
 	cout << "Shutdown status: " << status << endl;
 	cv::destroyAllWindows();
-#endif
 	return 0;
 }

@@ -1,9 +1,9 @@
-//Note:DCAM800 has no RGB frame
+//Note:DCAM800 has no RGB frame and no use DCAM_305 in Vzense_dcamtype.h
 
 #include <iostream>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-#include "VZense_api2.h"
+#include "Vzense_api2.h"
 #include <thread>
 
 using namespace std;
@@ -33,6 +33,9 @@ static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, c
 
 int main(int argc, char *argv[])
 {
+#ifdef DCAM_305
+	return 0;
+#else
 	PsReturnStatus status;
 	uint32_t deviceIndex = 0;
 	uint32_t deviceCount = 0;
@@ -717,5 +720,6 @@ GET:
 	status = Ps2_Shutdown();
 	cout << "Shutdown status: " << status << endl;
 	cv::destroyAllWindows();
+#endif
 	return 0;
 }
