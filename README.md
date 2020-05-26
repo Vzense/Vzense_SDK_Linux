@@ -6,7 +6,8 @@ VzenseSDK_Linux
 
 - DCAM710
 - DCAM800
-- DCAM800Lite
+- DCAM800LITE
+- DCAM305
 
 ### Summary Of The Guidelines
 
