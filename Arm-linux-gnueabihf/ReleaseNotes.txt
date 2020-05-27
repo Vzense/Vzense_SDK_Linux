@@ -1,6 +1,6 @@
 ﻿V3.0.0.8
 1. Fix some bug
-2. Support DCAM800Lite,
+2. Support DCAM800LITE,DCAM305
  
 V3.0.0.7
 1. The "FrameViewer_DCAM800.exe" in Tools is for DCAM800,
