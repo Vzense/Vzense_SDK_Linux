@@ -1,6 +1,6 @@
-TARGET := FrameViewer_DCAM305
+TARGET := FrameViewer
 
-SOURCE := FrameViewer_DCAM305.cpp
+SOURCE := FrameViewer.cpp
 
 FLAGS := -I../../Include -I../../Thirdparty/opencv-3.4.1/include -Wl,-rpath,./:../Lib/:../../Lib/:../Thirdparty/opencv-3.4.1/lib:../../Thirdparty/opencv-3.4.1/lib -Wall -Wconversion -O3 -L../../Lib -lvzense_api -L../../Thirdparty/opencv-3.4.1/lib -lopencv_core -lopencv_highgui -lopencv_imgproc
 
