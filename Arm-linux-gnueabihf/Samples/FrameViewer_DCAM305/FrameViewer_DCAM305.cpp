@@ -202,7 +202,8 @@ GET:
 	bool f_bMappedRGB = true;
 	bool f_bMappedDepth = false;
 	bool f_bMappedIR = false;
- 
+	bool f_bPointClound = false;
+
 	cout << "\n--------------------------------------------------------------------" << endl;
 	cout << "--------------------------------------------------------------------" << endl;
 	cout << "Press following key to set corresponding feature:" << endl;
@@ -251,6 +252,27 @@ GET:
 
 			if (depthFrame.pFrameData != NULL)
 			{
+				if (f_bPointClound)
+				{
+					PointCloudWriter.open("PointCloud.txt");
+					PsFrame &srcFrame = depthFrame;
+					const int len = srcFrame.width * srcFrame.height;
+					PsVector3f* worldV = new PsVector3f[len];
+
+					Ps2_ConvertDepthFrameToWorldVector(deviceHandle, sessionIndex, srcFrame, worldV); //Convert Depth frame to World vectors.
+
+					for (int i = 0; i < len; i++)
+					{
+						if (worldV[i].z == 0 || worldV[i].z == 0xFFFF)
+							continue; //discard zero points
+						PointCloudWriter << worldV[i].x << "\t" << worldV[i].y << "\t" << worldV[i].z << std::endl;
+					}
+					delete[] worldV;
+					worldV = NULL;
+					std::cout << "Save point cloud successful in PointCloud.txt" << std::endl;
+					PointCloudWriter.close();
+					f_bPointClound = false;
+				}
 				//Display the Depth Image
 				Opencv_Depth(slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
 				cv::imshow(depthImageWindow, imageMat);
@@ -409,30 +431,13 @@ GET:
 	
 		else if (key == 'P' || key == 'p')
 		{
-			//Save the pointcloud
-			if (depthFrame.pFrameData != NULL )
+			if (dataMode == PsDepthAndIR15_RGB30)
 			{
-				PointCloudWriter.open("PointCloud.txt");
-				PsFrame &srcFrame = depthFrame;
-				const int len = srcFrame.width * srcFrame.height;
-				PsVector3f* worldV = new PsVector3f[len];
-
-				Ps2_ConvertDepthFrameToWorldVector(deviceHandle, sessionIndex, srcFrame, worldV); //Convert Depth frame to World vectors.
-
-				for (int i = 0; i < len; i++)
-				{
-					if (worldV[i].z == 0 || worldV[i].z == 0xFFFF)
-						continue; //discard zero points
-					PointCloudWriter << worldV[i].x << "\t" << worldV[i].y << "\t" << worldV[i].z << std::endl;
-				}
-				delete[] worldV;
-				worldV = NULL;
-				std::cout << "Save point cloud successful in PointCloud.txt" << std::endl;
-				PointCloudWriter.close();
+				f_bPointClound = true;
 			}
 			else
 			{
-				std::cout << "Current Depth Frame is NULL" << endl;
+				cout << "has no depth" << endl;
 			}
 		}
 		else if (key == 'T' || key == 't')

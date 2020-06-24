@@ -94,14 +94,11 @@ GET:
 		cout << "Set Data Mode to PsDepthAndIR_30" << endl;
 
 	//Set the Depth Range to Near through Ps2_SetDepthRange interface
-	status = Ps2_SetDepthRange(deviceHandle, sessionIndex, PsNearRange);
+	status = Ps2_SetDepthRange(deviceHandle, sessionIndex, depthRange);
 	if (status != PsReturnStatus::PsRetOK)
 		cout << "Ps2_SetDepthRange failed!" << endl;
 	else
 		cout << "Set Depth Range to Near" << endl;
-
-	//Enable the Depth and RGB synchronize feature
-	Ps2_SetSynchronizeEnabled(deviceHandle, sessionIndex, true);
  
 	PsCameraParameters cameraParameters;
 	status = Ps2_GetCameraParameters(deviceHandle, sessionIndex, PsDepthSensor, &cameraParameters);
@@ -187,7 +184,7 @@ GET:
 	PsVector3f WorldVector = { 0.0f };
 
 	bool f_bWDRMode = false;
-	bool f_bSync = false;
+	bool f_bPointClound = false;
 
 	status = Ps2_GetDataMode(deviceHandle, sessionIndex, &dataMode);
 	if (status != PsReturnStatus::PsRetOK)
@@ -198,7 +195,23 @@ GET:
 	{
 		f_bWDRMode = true;
 	}
+	PsDepthRangeList rangelist = { 0 };
+	int len = sizeof(rangelist);
+	status = Ps2_GetProperty(deviceHandle, sessionIndex, PsPropertyDepthRangeList, &rangelist, &len);
+
+	if (status == PsReturnStatus::PsRetOK&&rangelist.count > 0)
+	{
+		cout << "Available Range List: ";
+		for (int i = 0; i < rangelist.count-1; i++)
+		{
+			cout << (int)rangelist.depthrangelist[i] <<",";
+		}
+		cout << (int)rangelist.depthrangelist[rangelist.count - 1] << endl;
+	}
 #ifndef DCAM_800
+
+	//Enable the Depth and RGB synchronize feature
+	Ps2_SetSynchronizeEnabled(deviceHandle, sessionIndex, true);
 
 	//Set PixelFormat as PsPixelFormatBGR888 for opencv display
 	Ps2_SetColorPixelFormat(deviceHandle, sessionIndex, PsPixelFormatBGR888);
@@ -223,15 +236,17 @@ GET:
 	const string mappedRgbImageWindow = "MappedRGB Image"; 
 	bool f_bMappedRGB = true;
 	bool f_bMappedDepth = true;
+	bool f_bSync = false;
+
 #endif
 	cout << "\n--------------------------------------------------------------------" << endl;
 	cout << "--------------------------------------------------------------------" << endl;
 	cout << "Press following key to set corresponding feature:" << endl;
 	cout << "0/1/2...: Change depth range Near/Middle/Far..." << endl;
-	cout << "S/s: Enable or disable the Depth and RGB synchronize feature " << endl;
 	cout << "P/p: Save point cloud data into PointCloud.txt in current directory" << endl;
 	cout << "T/t: Change background filter threshold value" << endl;
 #ifndef DCAM_800
+	cout << "S/s: Enable or disable the Depth and RGB synchronize feature " << endl;
 	cout << "M/m: Change data mode: input corresponding index in terminal:" << endl;
 	cout << "                    0: Output Depth and RGB in 30 fps" << endl;
 	cout << "                    1: Output IR and RGB in 30 fps" << endl;
@@ -286,6 +301,27 @@ GET:
 
 			if (depthFrame.pFrameData != NULL)
 			{
+				if (f_bPointClound)
+				{
+					PointCloudWriter.open("PointCloud.txt");
+					PsFrame &srcFrame = depthFrame;
+					const int len = srcFrame.width * srcFrame.height;
+					PsVector3f* worldV = new PsVector3f[len];
+
+					Ps2_ConvertDepthFrameToWorldVector(deviceHandle, sessionIndex, srcFrame, worldV); //Convert Depth frame to World vectors.
+
+					for (int i = 0; i < len; i++)
+					{
+						if (worldV[i].z == 0 || worldV[i].z == 0xFFFF)
+							continue; //discard zero points
+						PointCloudWriter << worldV[i].x << "\t" << worldV[i].y << "\t" << worldV[i].z << std::endl;
+					}
+					delete[] worldV;
+					worldV = NULL;
+					std::cout << "Save point cloud successful in PointCloud.txt" << std::endl;
+					PointCloudWriter.close();
+					f_bPointClound = false;
+				}
 				//Display the Depth Image
 				Opencv_Depth(slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
 				cv::imshow(depthImageWindow, imageMat);
@@ -323,6 +359,27 @@ GET:
 			status = Ps2_GetFrame(deviceHandle, sessionIndex, PsWDRDepthFrame, &wdrDepthFrame);
 			if (wdrDepthFrame.pFrameData != NULL)
 			{
+				if (f_bPointClound)
+				{
+					PointCloudWriter.open("PointCloud.txt");
+					PsFrame &srcFrame = wdrDepthFrame ;
+					const int len = srcFrame.width * srcFrame.height;
+					PsVector3f* worldV = new PsVector3f[len];
+
+					Ps2_ConvertDepthFrameToWorldVector(deviceHandle, sessionIndex, srcFrame, worldV); //Convert Depth frame to World vectors.
+
+					for (int i = 0; i < len; i++)
+					{
+						if (worldV[i].z == 0 || worldV[i].z == 0xFFFF)
+							continue; //discard zero points
+						PointCloudWriter << worldV[i].x << "\t" << worldV[i].y << "\t" << worldV[i].z << std::endl;
+					}
+					delete[] worldV;
+					worldV = NULL;
+					std::cout << "Save point cloud successful in PointCloud.txt" << std::endl;
+					PointCloudWriter.close();
+					f_bPointClound = false;
+				}
 				//Display the WDR Depth Image
 				Opencv_Depth(wdrSlope, wdrDepthFrame.height, wdrDepthFrame.width, wdrDepthFrame.pFrameData, imageMat);
 				cv::imshow(wdrDepthImageWindow, imageMat);
@@ -595,31 +652,26 @@ GET:
 		}		
 		else if (key == 'P' || key == 'p')
 		{
-			//Save the pointcloud
-			if (depthFrame.pFrameData != NULL || wdrDepthFrame.pFrameData != NULL)
+#ifdef DCAM_800
+			if (dataMode != PsIR_30)
 			{
-				PointCloudWriter.open("PointCloud.txt");
-				PsFrame &srcFrame = (f_bWDRMode ? wdrDepthFrame : depthFrame);
-				const int len = srcFrame.width * srcFrame.height;
-				PsVector3f* worldV = new PsVector3f[len];
-
-				Ps2_ConvertDepthFrameToWorldVector(deviceHandle, sessionIndex, srcFrame, worldV); //Convert Depth frame to World vectors.
-
-				for (int i = 0; i < len; i++)
-				{
-					if (worldV[i].z == 0 || worldV[i].z == 0xFFFF)
-						continue; //discard zero points
-					PointCloudWriter << worldV[i].x << "\t" << worldV[i].y << "\t" << worldV[i].z << std::endl;
-				}
-				delete[] worldV;
-				worldV = NULL;
-				std::cout << "Save point cloud successful in PointCloud.txt" << std::endl;
-				PointCloudWriter.close();
+				f_bPointClound = true;
 			}
 			else
 			{
-				std::cout << "Current Depth Frame is NULL" << endl;
+				cout << "has no depth" << endl;
 			}
+#else
+			if (dataMode != PsIRAndRGB_30)
+			{
+				f_bPointClound = true;
+			}
+			else
+			{
+				cout << "has no depth" << endl;
+			}
+#endif
+
 		}
 		else if (key == 'T' || key == 't')
 		{
@@ -631,15 +683,7 @@ GET:
 			Ps2_SetThreshold(deviceHandle, sessionIndex, threshold);
 			cout << "Set background threshold value: " << threshold << endl;
 		}		
-		else if (key == 'S' || key == 's')
-		{
-			status = Ps2_SetSynchronizeEnabled(deviceHandle, sessionIndex, f_bSync);
-			if (status == PsRetOK)
-			{
-				cout << "Set Synchronize " << (f_bSync ? "Enabled." : "Disabled.") << endl;
-				f_bSync = !f_bSync;
-			}
-		}
+		
 		else if (key == 'V' || key == 'v')
 		{
 			static bool bWDRStyle = true;
@@ -659,6 +703,15 @@ GET:
 			break;
 		}
 #ifndef DCAM_800
+		else if (key == 'S' || key == 's')
+		{
+			status = Ps2_SetSynchronizeEnabled(deviceHandle, sessionIndex, f_bSync);
+			if (status == PsRetOK)
+			{
+				cout << "Set Synchronize " << (f_bSync ? "Enabled." : "Disabled.") << endl;
+				f_bSync = !f_bSync;
+			}
+		}
 		else if (key == 'R' || key == 'r')
 		{
 			cout << "please select RGB resolution to set: 0:1080P; 1:720P; 2:480P; 3:360P" << endl;

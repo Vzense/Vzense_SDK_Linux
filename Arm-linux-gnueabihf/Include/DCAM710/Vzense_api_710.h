@@ -558,4 +558,69 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetMapperEnabledRGBToDepth(PsDeviceHandle
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetMapperEnabledRGBToDepth(PsDeviceHandle device, uint32_t sessionIndex, bool *bEnabled);
 
+/**
+* @brief 		Set hotplug status callback function
+* @param[in]	pCallback		Pointer to the callback function. See ::PtrHotPlugStatusCallback 
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetHotPlugStatusCallback(PtrHotPlugStatusCallback pCallback);
+
+/**
+* @brief 		Returns the pulse count from the device specified by <code>device</code>.
+* @param[in] 	device			The handle of the device on which to set the pulse count.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[out] 	pwdrPulseCount	A pointer to a ::PsWDRPulseCount variable in which to store the PulseCount in WDR mode.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetWDRPulseCount(PsDeviceHandle device, uint32_t sessionIndex, PsWDRPulseCount* pwdrPulseCount);
+
+/**
+* @brief 		Sets the pulse count for the device specified by <code>device</code>.
+* @param[in] 	device			The handle of the device on which to set the pulse count.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[in] 	pwdrPulseCount 	The PulseCount value in WDR mode to set.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetWDRPulseCount(PsDeviceHandle device, uint32_t sessionIndex, PsWDRPulseCount wdrpulseCount);
+
+/**
+* @brief 		Gets the serial number.
+* @param[in] 	device			The handle of the device on which to set the pulse count.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[in] 	sn 				Pointer to a variable in which to store the returned sn value.
+* @param[in] 	length 			The maximum length is 63 bytes.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetSerialNumber(PsDeviceHandle device, uint32_t sessionIndex, char* sn,int length);
+
+/**
+* @brief 		Gets the firmware version number.
+* @param[in] 	device			The handle of the device on which to set the pulse count.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[in] 	fw 				Pointer to a variable in which to store the returned fw value.
+* @param[in] 	length 			The maximum length is 63 bytes.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetFirmwareVersionNumber(PsDeviceHandle device, uint32_t sessionIndex, char* fw, int length);
+
+/**
+* @brief		Enables or disables the DSP feature for tof frame.
+*				The DSP feature only support ComputeRealDepthCorrection and SpatialFilter.
+*	            The default filter has ComputeRealDepthCorrection, SpatialFilter,TimeFilter, DepthDistortionCorrection and IrDistortionCorrection.
+*				Enable the DSP feature can reduce SDK loading, but disable it has a better effect. 
+* @param[in]	device			The handle of the device on which to enable or disable the feature.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[in]	bEnabled		Set to <code>true</code> to enable the feature or <code>false</code> to disable the feature.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetDSPEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool bEnabled);
+
+/**
+* @brief		Returns the Boolean value of whether the DSP feature is enabled or disabled.
+* @param[in]	device			The handle of the device on which to enable or disable the feature.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[out]	bEnabled		Pointer to a variable in which to store the returned Boolean value.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetDSPEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool *bEnabled);
 #endif /* VZENSE_API_710_H */

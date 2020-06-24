@@ -213,6 +213,34 @@ typedef struct
 	PsDeviceType devicetype;
 	int16_t rotatetype;
 }PsSessionInfo;
+
+typedef struct
+{
+	uint8_t range;
+	uint16_t	value0;
+	uint16_t	value1;
+	uint16_t	value2;
+	uint16_t	value3;
+	uint16_t	value4;
+} PsTalDelay;
+/**
+* @brief WDR (Wide Dynamic Range) output mode settings (e.g. Near/Far range fusion).
+*/
+typedef struct
+{
+ 	uint16_t    pulseCount1;      //!< The pulseCount of the first range.
+	uint16_t    pulseCount2;      //!< The pulseCount of the first range.
+	uint16_t    pulseCount3;      //!< The pulseCount of the first range.
+	uint8_t	    option;
+}PsWDRPulseCount;
+
 #pragma pack (pop)
+
+/**
+* @brief hotplug status callback function
+* uri    return the uri of the Device, See ::PsDeviceInfo
+* state  0:device added , 1:device removed
+*/
+typedef void(*PtrHotPlugStatusCallback)(const char* uri, int state);
 
 #endif /* VZENSE_TYPES_H */

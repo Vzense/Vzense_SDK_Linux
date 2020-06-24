@@ -34,31 +34,18 @@ typedef enum{
 	PsWDR_Depth = 11,               //!< WDR (Wide Dynamic Range) depth mode. Supports alternating multi-range depth frame output (e.g. Near/Far/Near/Far/Near).
 	PsWDR_IR = 12,                  //!< WDR (Wide Dynamic Range) IR mode. Not currently implemented.
 	PsWDR_DepthAndIR = 13,          //!< WDR (Wide Dynamic Range) Depth and IR mode. Not currently implemented.
-
-	PsScanFace = 100,
-	PsScanCode,
-	PsStandBy 
 }PsDataMode;
 
 /**
  * @brief Camera device properties to get or set on a device.
  */
 typedef enum{
-	PsPropertySN_Str = 5,           //!< Device serial number (e.g.PD7110CGC9270020W). The maximum length is 64 bytes.
-	PsPropertyFWVer_Str = 6,        //!< Device firmware version number (e.g. DCAM710_c086_pc_sv0.01_R6_20180917_b35). The maximum length is 64 bytes.
-	PsPropertyHWVer_Str = 7,        //!< Device hardware version number (e.g. R6). The maximum length is 64 bytes.
+	PsPropertySN_Str = 5,           //!< Device serial number (e.g.PD7110CGC9270020W). The maximum length is 63 bytes.
+	PsPropertyFWVer_Str = 6,        //!< Device firmware version number (e.g. DCAM710_c086_pc_sv0.01_R6_20180917_b35). The maximum length is 63 bytes.
+	PsPropertyHWVer_Str = 7,        //!< Device hardware version number (e.g. R6). The maximum length is 63 bytes.
 	PsPropertyDataMode_UInt8 = 8,   //!< Sets the data mode when invoking ::PsSetDataMode(). See ::PsDataMode for more information.
 	PsPropertyDataModeList = 9,		//!< Gets the data mode lists that the device support
 	PsPropertyDepthRangeList = 10,	//!< Gets the depth range lists that the device support
-
-
-	PsPropertyDeviceUpgradeFlag = 11,	//!< Sets Gets the network device UpgradeFlag
-	PsPropertyDeviceSN = 12,			//!< Sets Gets the network device SN
-	PsPropertyDeviceMACAddr = 13,		//!< Sets Gets the network device MACAddr 
-	PsPropertyDeviceSoftVer = 14,		//!< Sets Gets the network device SoftVer 
-	PsPropertyDeviceIPAddr = 15,		//!< Sets Gets the network device IPAddress
-	PsPropertyDeviceSubnetMask = 16		//!< Sets Gets the network device SubnetMask
-
 }PsPropertyType;
 
 /**
@@ -194,7 +181,9 @@ typedef enum {
 typedef enum
 {
 	NONE,
+	DCAMUPDATE = 1,
 	DCAM305 = 305,
+	DCAM500 = 500,
 	DCAM510 = 510,
 	DCAM700 = 700,
 	DCAM710 = 710,

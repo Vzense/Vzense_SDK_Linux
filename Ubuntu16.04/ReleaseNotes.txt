@@ -1,4 +1,14 @@
-﻿V3.0.0.8
+﻿V3.0.0.9
+1. Support DCAM800LITE(usb),DCAM500
+2. Add api
+	Ps2_SetWDRPulseCount
+	Ps2_GetWDRPulseCount
+	Ps2_GetSerialNumber
+	Ps2_GetFirmwareVersionNumber
+3. Support DSP(PsDepthAndIR_30) and RGB 480P_YUV,DCAM710(FW>=b65) DCAM305(FW>=b44)
+4. Add hotplug status callback api Ps2_SetHotPlugStatusCallback
+	
+V3.0.0.8
 1. Fix some bug
 2. Support DCAM800LITE,DCAM305
  

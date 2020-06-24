@@ -199,6 +199,14 @@ typedef struct
 	PsDeviceType devicetype;
 	int16_t rotatetype;
 }PsSessionInfo;
+
+/**
+* @brief hotplug status callback function
+* uri    return the uri of the Device, See ::PsDeviceInfo
+* state  0:device added , 1:device removed
+*/
+typedef void(*PtrHotPlugStatusCallback)(const char* uri, int state);
+
 #pragma pack (pop)
 
 #endif /* VZENSE_TYPES_H */
