@@ -1,4 +1,8 @@
-﻿V3.0.0.9
+﻿V3.0.1.0
+1. Support DCAM710(FW<b65)
+2. Fix some bug
+
+V3.0.0.9
 1. Support DCAM800LITE(usb),DCAM500
 2. Add api
 	Ps2_SetWDRPulseCount
