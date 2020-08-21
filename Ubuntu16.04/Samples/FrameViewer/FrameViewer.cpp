@@ -41,6 +41,10 @@ int main(int argc, char *argv[])
 	uint32_t deviceCount = 0;
 	uint32_t slope = 1450;
 	uint32_t wdrSlope = 4400;
+	uint32_t wdrRange1Slope = 1450;
+	uint32_t wdrRange2Slope = 4400;
+	uint32_t wdrRange3Slope = 6000;
+
 	PsDepthRange depthRange = PsNearRange;
 	PsDataMode dataMode = PsDepthAndIR_30;
  
@@ -178,7 +182,10 @@ GET:
 	const string irImageWindow = "IR Image";
 	const string depthImageWindow = "Depth Image";
 	const string wdrDepthImageWindow = "WDR Depth Image";
- 
+	const string wdrDepthRange1ImageWindow = "WDR Depth Range1 Image";
+	const string wdrDepthRange2ImageWindow = "WDR Depth Range2 Image";
+	const string wdrDepthRange3ImageWindow = "WDR Depth Range3 Image";
+
 	ofstream PointCloudWriter;
 	PsDepthVector3 DepthVector = { 0, 0, 0 };
 	PsVector3f WorldVector = { 0.0f };
@@ -272,9 +279,178 @@ GET:
 	cout << "Esc: Program quit " << endl;
 	cout << "--------------------------------------------------------------------" << endl;
 	cout << "--------------------------------------------------------------------\n" << endl;
+	//Set WDR Output Mode, two ranges Near/Far output from device every one frame, no care for range3 and range3Count in PsWDRTotalRange_Two
+	PsWDROutputMode wdrMode = { PsWDRTotalRange_Two, PsNearRange, 1, PsFarRange, 1, PsNearRange, 1 };
+	//PsWDROutputMode wdrMode = { PsWDRTotalRange_Three, PsNearRange, 1, PsMidRange, 1, PsFarRange, 1 };
+	// Get WDR slope
+	if (wdrMode.totalRange == PsWDRTotalRange_Two)
+	{
+		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range1, &measuringrange);
+		if (status != PsReturnStatus::PsRetOK)
+			cout << "Ps2_GetMeasuringRange failed!" << endl;
+		else
+		{
+			switch ((PsDepthRange)wdrMode.range1)
+			{
+			case PsNearRange:
+			case PsXNearRange:
+			case PsXXNearRange:
+				wdrRange1Slope = measuringrange.effectDepthMaxNear;
+				break;
+
+			case PsMidRange:
+			case PsXMidRange:
+			case PsXXMidRange:
+				wdrRange1Slope = measuringrange.effectDepthMaxMid;
+				break;
+
+			case PsFarRange:
+			case PsXFarRange:
+			case PsXXFarRange:
+
+				wdrRange1Slope = measuringrange.effectDepthMaxFar;
+				break;
+			default:
+				break;
+			}
+			cout << "wdrRange1Slope   ==  " << wdrRange1Slope << endl;
+		}
+
+		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range2, &measuringrange);
+		if (status != PsReturnStatus::PsRetOK)
+			cout << "Ps2_GetMeasuringRange failed!" << endl;
+		else
+		{
+			switch ((PsDepthRange)wdrMode.range2)
+			{
+			case PsNearRange:
+			case PsXNearRange:
+			case PsXXNearRange:
+				wdrRange2Slope = wdrSlope == measuringrange.effectDepthMaxNear;
+				break;
+
+			case PsMidRange:
+			case PsXMidRange:
+			case PsXXMidRange:
+				wdrRange2Slope = wdrSlope = measuringrange.effectDepthMaxMid;
+				break;
+
+			case PsFarRange:
+			case PsXFarRange:
+			case PsXXFarRange:
+
+				wdrRange2Slope = wdrSlope = measuringrange.effectDepthMaxFar;
+				break;
+			default:
+				break;
+			}
+			cout << "wdrSlope   ==  wdrRange2Slope " << wdrSlope << endl;
+		}
+
+	}
+	if (wdrMode.totalRange == PsWDRTotalRange_Three)
+	{
+		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range1, &measuringrange);
+		if (status != PsReturnStatus::PsRetOK)
+			cout << "Ps2_GetMeasuringRange failed!" << endl;
+		else
+		{
+			switch ((PsDepthRange)wdrMode.range1)
+			{
+			case PsNearRange:
+			case PsXNearRange:
+			case PsXXNearRange:
+				wdrRange1Slope = measuringrange.effectDepthMaxNear;
+				break;
+
+			case PsMidRange:
+			case PsXMidRange:
+			case PsXXMidRange:
+				wdrRange1Slope = measuringrange.effectDepthMaxMid;
+				break;
+
+			case PsFarRange:
+			case PsXFarRange:
+			case PsXXFarRange:
+
+				wdrRange1Slope = measuringrange.effectDepthMaxFar;
+				break;
+			default:
+				break;
+			}
+			cout << "wdrRange1Slope   ==  " << wdrRange1Slope << endl;
+		}
+
+		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range2, &measuringrange);
+		if (status != PsReturnStatus::PsRetOK)
+			cout << "Ps2_GetMeasuringRange failed!" << endl;
+		else
+		{
+			switch ((PsDepthRange)wdrMode.range2)
+			{
+			case PsNearRange:
+			case PsXNearRange:
+			case PsXXNearRange:
+				wdrRange2Slope = measuringrange.effectDepthMaxNear;
+				break;
+
+			case PsMidRange:
+			case PsXMidRange:
+			case PsXXMidRange:
+				wdrRange2Slope = measuringrange.effectDepthMaxMid;
+				break;
+
+			case PsFarRange:
+			case PsXFarRange:
+			case PsXXFarRange:
+
+				wdrRange2Slope = measuringrange.effectDepthMaxFar;
+				break;
+			default:
+				break;
+			}
+			cout << "wdrRange2Slope " << wdrSlope << endl;
+		}
+		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range3, &measuringrange);
+		if (status != PsReturnStatus::PsRetOK)
+			cout << "Ps2_GetMeasuringRange failed!" << endl;
+		else
+		{
+			switch ((PsDepthRange)wdrMode.range3)
+			{
+			case PsNearRange:
+			case PsXNearRange:
+			case PsXXNearRange:
+				wdrRange3Slope = wdrSlope = measuringrange.effectDepthMaxNear;
+				break;
+
+			case PsMidRange:
+			case PsXMidRange:
+			case PsXXMidRange:
+				wdrRange3Slope = wdrSlope = measuringrange.effectDepthMaxMid;
+				break;
+
+			case PsFarRange:
+			case PsXFarRange:
+			case PsXXFarRange:
+
+				wdrRange3Slope = wdrSlope = measuringrange.effectDepthMaxFar;
+				break;
+			default:
+				break;
+			}
+			cout << "wdrSlope   ==  wdrRange3Slope " << wdrSlope << endl;
+		}
+	}
+	int destroycount = 0;
 
 	for (;;)
 	{
+		if (destroycount > 0)
+		{
+			destroycount--;
+			cv::destroyAllWindows();
+		}
 		PsFrame depthFrame = { 0 };
 		PsFrame irFrame = { 0 };
 		PsFrame wdrDepthFrame = { 0 };
@@ -323,8 +499,34 @@ GET:
 					f_bPointClound = false;
 				}
 				//Display the Depth Image
-				Opencv_Depth(slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
-				cv::imshow(depthImageWindow, imageMat);
+				if (f_bWDRMode)
+				{
+					if (depthFrame.depthRange == wdrMode.range1)
+					{
+						Opencv_Depth(wdrRange1Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
+						cv::imshow(wdrDepthRange1ImageWindow, imageMat);					
+					}
+					else if (depthFrame.depthRange == wdrMode.range2)
+					{
+						Opencv_Depth(wdrRange2Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
+						cv::imshow(wdrDepthRange2ImageWindow, imageMat);
+					}
+					else if (depthFrame.depthRange == wdrMode.range3)
+					{
+						Opencv_Depth(wdrRange3Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
+						cv::imshow(wdrDepthRange3ImageWindow, imageMat);
+					}
+					else
+					{
+						Opencv_Depth(wdrSlope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
+						cv::imshow(wdrDepthImageWindow, imageMat);
+					}
+				}
+				else
+				{
+					Opencv_Depth(slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
+					cv::imshow(depthImageWindow, imageMat);
+				}
 			}
 			else
 			{
@@ -522,24 +724,22 @@ GET:
 				continue;
 			}
 #endif			
-
-			status = Ps2_SetDataMode(deviceHandle, sessionIndex, (PsDataMode)dataMode);
-			if (status != PsRetOK)
-			{
-				cout << "Ps2_SetDataMode  status" << status << endl;
-			}
 			if (dataMode == PsWDR_Depth)
 			{
-				//Set WDR Output Mode, two ranges Near/Far output from device every one frame, no care for range3 and range3Count in PsWDRTotalRange_Two
-				PsWDROutputMode wdrMode = { PsWDRTotalRange_Two, PsNearRange, 1, PsFarRange, 1, PsNearRange, 1 };
-				//PsWDROutputMode wdrMode = { PsWDRTotalRange_Three, PsNearRange, 1, PsMidRange, 1, PsFarRange, 1 };
 				Ps2_SetWDROutputMode(deviceHandle, sessionIndex, &wdrMode);
 				f_bWDRMode = true;
+				
 			}
 			else
 			{
 				f_bWDRMode = false;
 			}
+			status = Ps2_SetDataMode(deviceHandle, sessionIndex, (PsDataMode)dataMode);
+			if (status != PsRetOK)
+			{
+				cout << "Ps2_SetDataMode  status" << status << endl;
+			}		
+			destroycount = 3;
 		}
 		else if ((key == '0') || (key == '1') || (key == '2') || (key == '3') || (key == '4') || (key == '5') || (key == '6') || (key == '7') || (key == '8'))
 		{

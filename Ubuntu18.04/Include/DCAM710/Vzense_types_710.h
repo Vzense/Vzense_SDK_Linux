@@ -153,14 +153,12 @@ typedef struct
 
 typedef struct
 {
-	uint8_t index;
 	uint8_t count;
 	uint8_t datamodelist[32];  
 }PsDataModeList;
 
 typedef struct
 {
-	uint8_t index;
 	uint8_t count;
 	uint8_t depthrangelist[9];
 }PsDepthRangeList;

@@ -227,8 +227,16 @@ GET:
 	cout << "--------------------------------------------------------------------" << endl;
 	cout << "--------------------------------------------------------------------\n" << endl;
 
+	int destroycount = 0;
+
 	for (;;)
 	{
+		if (destroycount > 0)
+		{
+			destroycount--;
+			cv::destroyAllWindows();
+		}
+
 		PsFrame depthFrame = { 0 };
 		PsFrame irFrame = { 0 };
 		PsFrame rgbFrame = { 0 };
@@ -427,6 +435,7 @@ GET:
 			{
 				cout << "Ps2_SetDataMode  status" << status << endl;
 			}
+			destroycount = 3;
 		}
 	
 		else if (key == 'P' || key == 'p')

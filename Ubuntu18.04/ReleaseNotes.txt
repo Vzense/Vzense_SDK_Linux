@@ -1,4 +1,15 @@
-﻿V3.0.1.0
+﻿V3.0.2
+1. Optimize ImgPreProcess code
+2. Remove ffmpeg library dependencies
+3. Remove the vdpau and X11 library dependencies in Linux SDK
+4. Comple the Samples needs opencv and the 'libopencv_highgui.so' needs 'X11',so 'ldd FrameViewer_DCAM710' still has 'libX11.so',in Linux system
+5. Optimize	SDK demo,remove "uint8_t index;" in "PsDataModeList" and "PsDepthRangeList", in "Vzense_types_710.h","Vzense_types_305.h" and "Vzense_types_800.h" 
+6. When use WDR mode, call "Ps2_SetWDROutputMode" api first,then call "Ps2_SetDataMode" api
+7. Optimize Samples code，in wdr mode,and not do merge, show frame separately
+8. Support DCAM800LITE(FW<b10) and DCAM500(FW<b10)
+9. Change SDK release version "x.x.x.x" to "x.x.x"
+
+V3.0.1.0
 1. Support DCAM710(FW<b65)
 2. Fix some bug
 
