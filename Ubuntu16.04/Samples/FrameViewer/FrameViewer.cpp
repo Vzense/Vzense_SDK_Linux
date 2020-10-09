@@ -47,7 +47,9 @@ int main(int argc, char *argv[])
 
 	PsDepthRange depthRange = PsNearRange;
 	PsDataMode dataMode = PsDepthAndIR_30;
- 
+	PsWDROutputMode wdrMode = { PsWDRTotalRange_Two, PsNearRange, 1, PsFarRange, 1, PsNearRange, 1 };
+	bool f_bWDRMode = false;
+	bool bWDRStyle = true;
 	status = Ps2_Initialize();
 	if (status != PsReturnStatus::PsRetOK)
 	{
@@ -91,19 +93,6 @@ GET:
 
 	Ps2_StartStream(deviceHandle, sessionIndex);
 
-	status = Ps2_SetDataMode(deviceHandle, sessionIndex, dataMode);
-	if (status != PsReturnStatus::PsRetOK)
-		cout << "Ps2_SetDataMode failed!" << endl;
-	else
-		cout << "Set Data Mode to PsDepthAndIR_30" << endl;
-
-	//Set the Depth Range to Near through Ps2_SetDepthRange interface
-	status = Ps2_SetDepthRange(deviceHandle, sessionIndex, depthRange);
-	if (status != PsReturnStatus::PsRetOK)
-		cout << "Ps2_SetDepthRange failed!" << endl;
-	else
-		cout << "Set Depth Range to Near" << endl;
- 
 	PsCameraParameters cameraParameters;
 	status = Ps2_GetCameraParameters(deviceHandle, sessionIndex, PsDepthSensor, &cameraParameters);
 
@@ -148,35 +137,222 @@ GET:
 	//Get MeasuringRange
 	PsMeasuringRange measuringrange = { 0 };
 
-	status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, depthRange, &measuringrange);
+	status = Ps2_GetDataMode(deviceHandle, sessionIndex, &dataMode);
 	if (status != PsReturnStatus::PsRetOK)
-		cout << "Ps2_GetMeasuringRange failed!" << endl;
+		cout << "Ps2_GetDataMode failed!" << endl;
+	else
+		cout << "Get Ps2_GetDataMode : " << dataMode << endl;
+	if (dataMode == PsWDR_Depth)
+	{
+		f_bWDRMode = true;
+
+		status = Ps2_GetWDROutputMode(deviceHandle, sessionIndex, &wdrMode);
+
+		if (status != PsReturnStatus::PsRetOK)
+			cout << "Ps2_GetWDROutputMode failed!" << endl;
+		else
+		{
+			if (wdrMode.totalRange == PsWDRTotalRange_Two)
+			{
+				depthRange = wdrMode.range2;
+				status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range1, &measuringrange);
+				if (status != PsReturnStatus::PsRetOK)
+					cout << "Ps2_GetMeasuringRange failed!" << endl;
+				else
+				{
+					switch ((PsDepthRange)wdrMode.range1)
+					{
+					case PsNearRange:
+					case PsXNearRange:
+					case PsXXNearRange:
+						wdrRange1Slope = measuringrange.effectDepthMaxNear;
+						break;
+
+					case PsMidRange:
+					case PsXMidRange:
+					case PsXXMidRange:
+						wdrRange1Slope = measuringrange.effectDepthMaxMid;
+						break;
+
+					case PsFarRange:
+					case PsXFarRange:
+					case PsXXFarRange:
+
+						wdrRange1Slope = measuringrange.effectDepthMaxFar;
+						break;
+					default:
+						break;
+					}
+					cout << "wdrRange1Slope   =  " << wdrRange1Slope << endl;
+				}
+
+				status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range2, &measuringrange);
+				if (status != PsReturnStatus::PsRetOK)
+					cout << "Ps2_GetMeasuringRange failed!" << endl;
+				else
+				{
+					switch ((PsDepthRange)wdrMode.range2)
+					{
+					case PsNearRange:
+					case PsXNearRange:
+					case PsXXNearRange:
+						wdrRange2Slope = wdrSlope == measuringrange.effectDepthMaxNear;
+						break;
+
+					case PsMidRange:
+					case PsXMidRange:
+					case PsXXMidRange:
+						wdrRange2Slope = wdrSlope = measuringrange.effectDepthMaxMid;
+						break;
+
+					case PsFarRange:
+					case PsXFarRange:
+					case PsXXFarRange:
+
+						wdrRange2Slope = wdrSlope = measuringrange.effectDepthMaxFar;
+						break;
+					default:
+						break;
+					}
+					cout << "wdrSlope   =  wdrRange2Slope  " << wdrSlope << endl;
+				}
+
+			}
+			else if (wdrMode.totalRange == PsWDRTotalRange_Three)
+			{
+				status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range1, &measuringrange);
+				if (status != PsReturnStatus::PsRetOK)
+					cout << "Ps2_GetMeasuringRange failed!" << endl;
+				else
+				{
+					switch ((PsDepthRange)wdrMode.range1)
+					{
+					case PsNearRange:
+					case PsXNearRange:
+					case PsXXNearRange:
+						wdrRange1Slope = measuringrange.effectDepthMaxNear;
+						break;
+
+					case PsMidRange:
+					case PsXMidRange:
+					case PsXXMidRange:
+						wdrRange1Slope = measuringrange.effectDepthMaxMid;
+						break;
+
+					case PsFarRange:
+					case PsXFarRange:
+					case PsXXFarRange:
+
+						wdrRange1Slope = measuringrange.effectDepthMaxFar;
+						break;
+					default:
+						break;
+					}
+					cout << "wdrRange1Slope   =  " << wdrRange1Slope << endl;
+				}
+
+
+				status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range2, &measuringrange);
+				if (status != PsReturnStatus::PsRetOK)
+					cout << "Ps2_GetMeasuringRange failed!" << endl;
+				else
+				{
+					switch ((PsDepthRange)wdrMode.range2)
+					{
+					case PsNearRange:
+					case PsXNearRange:
+					case PsXXNearRange:
+						wdrRange2Slope = measuringrange.effectDepthMaxNear;
+						break;
+
+					case PsMidRange:
+					case PsXMidRange:
+					case PsXXMidRange:
+						wdrRange2Slope = measuringrange.effectDepthMaxMid;
+						break;
+
+					case PsFarRange:
+					case PsXFarRange:
+					case PsXXFarRange:
+
+						wdrRange2Slope = measuringrange.effectDepthMaxFar;
+						break;
+					default:
+						break;
+					}
+					cout << "wdrRange2Slope   =  " << wdrSlope << endl;
+				}
+				status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range3, &measuringrange);
+				if (status != PsReturnStatus::PsRetOK)
+					cout << "Ps2_GetMeasuringRange failed!" << endl;
+				else
+				{
+					switch ((PsDepthRange)wdrMode.range3)
+					{
+					case PsNearRange:
+					case PsXNearRange:
+					case PsXXNearRange:
+						wdrRange3Slope = wdrSlope = measuringrange.effectDepthMaxNear;
+						break;
+
+					case PsMidRange:
+					case PsXMidRange:
+					case PsXXMidRange:
+						wdrRange3Slope = wdrSlope = measuringrange.effectDepthMaxMid;
+						break;
+
+					case PsFarRange:
+					case PsXFarRange:
+					case PsXXFarRange:
+
+						wdrRange3Slope = wdrSlope = measuringrange.effectDepthMaxFar;
+						break;
+					default:
+						break;
+					}
+					cout << "wdrSlope   =  wdrRange3Slope  " << wdrSlope << endl;
+				}
+			}
+		}
+	}
 	else
 	{
-		switch (depthRange)
+		status = Ps2_GetDepthRange(deviceHandle, sessionIndex, &depthRange);
+		if (status != PsReturnStatus::PsRetOK)
+			cout << "Ps2_GetDepthRange failed!" << endl;
+		else
+			cout << "Get Depth Range " << depthRange << endl;
+
+		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, depthRange, &measuringrange);
+		if (status != PsReturnStatus::PsRetOK)
+			cout << "Ps2_GetMeasuringRange failed!" << endl;
+		else
 		{
-		case PsNearRange:
-		case PsXNearRange:
-		case PsXXNearRange:
-			slope = measuringrange.effectDepthMaxNear;
-			break;
+			switch (depthRange)
+			{
+			case PsNearRange:
+			case PsXNearRange:
+			case PsXXNearRange:
+				slope = measuringrange.effectDepthMaxNear;
+				break;
 
-		case PsMidRange:
-		case PsXMidRange:
-		case PsXXMidRange:
-			slope = measuringrange.effectDepthMaxMid;
-			break;
+			case PsMidRange:
+			case PsXMidRange:
+			case PsXXMidRange:
+				slope = measuringrange.effectDepthMaxMid;
+				break;
 
-		case PsFarRange:
-		case PsXFarRange:
-		case PsXXFarRange:
+			case PsFarRange:
+			case PsXFarRange:
+			case PsXXFarRange:
 
-			slope = measuringrange.effectDepthMaxFar;
-			break;
-		default:
-			break;
+				slope = measuringrange.effectDepthMaxFar;
+				break;
+			default:
+				break;
+			}
+			cout << "slope  ==  " << slope << endl;
 		}
-		cout << "slope  ==  " << slope << endl;
 	}
 	cv::Mat imageMat;
 	const string irImageWindow = "IR Image";
@@ -190,18 +366,8 @@ GET:
 	PsDepthVector3 DepthVector = { 0, 0, 0 };
 	PsVector3f WorldVector = { 0.0f };
 
-	bool f_bWDRMode = false;
 	bool f_bPointClound = false;
 
-	status = Ps2_GetDataMode(deviceHandle, sessionIndex, &dataMode);
-	if (status != PsReturnStatus::PsRetOK)
-		cout << "Ps2_GetDataMode failed!" << endl;
-	else
-		cout << "Get Ps2_GetDataMode : " << dataMode << endl;
-	if (dataMode == PsWDR_Depth)
-	{
-		f_bWDRMode = true;
-	}
 	PsDepthRangeList rangelist = { 0 };
 	int len = sizeof(rangelist);
 	status = Ps2_GetProperty(deviceHandle, sessionIndex, PsPropertyDepthRangeList, &rangelist, &len);
@@ -279,169 +445,7 @@ GET:
 	cout << "Esc: Program quit " << endl;
 	cout << "--------------------------------------------------------------------" << endl;
 	cout << "--------------------------------------------------------------------\n" << endl;
-	//Set WDR Output Mode, two ranges Near/Far output from device every one frame, no care for range3 and range3Count in PsWDRTotalRange_Two
-	PsWDROutputMode wdrMode = { PsWDRTotalRange_Two, PsNearRange, 1, PsFarRange, 1, PsNearRange, 1 };
-	//PsWDROutputMode wdrMode = { PsWDRTotalRange_Three, PsNearRange, 1, PsMidRange, 1, PsFarRange, 1 };
-	// Get WDR slope
-	if (wdrMode.totalRange == PsWDRTotalRange_Two)
-	{
-		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range1, &measuringrange);
-		if (status != PsReturnStatus::PsRetOK)
-			cout << "Ps2_GetMeasuringRange failed!" << endl;
-		else
-		{
-			switch ((PsDepthRange)wdrMode.range1)
-			{
-			case PsNearRange:
-			case PsXNearRange:
-			case PsXXNearRange:
-				wdrRange1Slope = measuringrange.effectDepthMaxNear;
-				break;
 
-			case PsMidRange:
-			case PsXMidRange:
-			case PsXXMidRange:
-				wdrRange1Slope = measuringrange.effectDepthMaxMid;
-				break;
-
-			case PsFarRange:
-			case PsXFarRange:
-			case PsXXFarRange:
-
-				wdrRange1Slope = measuringrange.effectDepthMaxFar;
-				break;
-			default:
-				break;
-			}
-			cout << "wdrRange1Slope   ==  " << wdrRange1Slope << endl;
-		}
-
-		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range2, &measuringrange);
-		if (status != PsReturnStatus::PsRetOK)
-			cout << "Ps2_GetMeasuringRange failed!" << endl;
-		else
-		{
-			switch ((PsDepthRange)wdrMode.range2)
-			{
-			case PsNearRange:
-			case PsXNearRange:
-			case PsXXNearRange:
-				wdrRange2Slope = wdrSlope == measuringrange.effectDepthMaxNear;
-				break;
-
-			case PsMidRange:
-			case PsXMidRange:
-			case PsXXMidRange:
-				wdrRange2Slope = wdrSlope = measuringrange.effectDepthMaxMid;
-				break;
-
-			case PsFarRange:
-			case PsXFarRange:
-			case PsXXFarRange:
-
-				wdrRange2Slope = wdrSlope = measuringrange.effectDepthMaxFar;
-				break;
-			default:
-				break;
-			}
-			cout << "wdrSlope   ==  wdrRange2Slope " << wdrSlope << endl;
-		}
-
-	}
-	if (wdrMode.totalRange == PsWDRTotalRange_Three)
-	{
-		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range1, &measuringrange);
-		if (status != PsReturnStatus::PsRetOK)
-			cout << "Ps2_GetMeasuringRange failed!" << endl;
-		else
-		{
-			switch ((PsDepthRange)wdrMode.range1)
-			{
-			case PsNearRange:
-			case PsXNearRange:
-			case PsXXNearRange:
-				wdrRange1Slope = measuringrange.effectDepthMaxNear;
-				break;
-
-			case PsMidRange:
-			case PsXMidRange:
-			case PsXXMidRange:
-				wdrRange1Slope = measuringrange.effectDepthMaxMid;
-				break;
-
-			case PsFarRange:
-			case PsXFarRange:
-			case PsXXFarRange:
-
-				wdrRange1Slope = measuringrange.effectDepthMaxFar;
-				break;
-			default:
-				break;
-			}
-			cout << "wdrRange1Slope   ==  " << wdrRange1Slope << endl;
-		}
-
-		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range2, &measuringrange);
-		if (status != PsReturnStatus::PsRetOK)
-			cout << "Ps2_GetMeasuringRange failed!" << endl;
-		else
-		{
-			switch ((PsDepthRange)wdrMode.range2)
-			{
-			case PsNearRange:
-			case PsXNearRange:
-			case PsXXNearRange:
-				wdrRange2Slope = measuringrange.effectDepthMaxNear;
-				break;
-
-			case PsMidRange:
-			case PsXMidRange:
-			case PsXXMidRange:
-				wdrRange2Slope = measuringrange.effectDepthMaxMid;
-				break;
-
-			case PsFarRange:
-			case PsXFarRange:
-			case PsXXFarRange:
-
-				wdrRange2Slope = measuringrange.effectDepthMaxFar;
-				break;
-			default:
-				break;
-			}
-			cout << "wdrRange2Slope " << wdrSlope << endl;
-		}
-		status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, (PsDepthRange)wdrMode.range3, &measuringrange);
-		if (status != PsReturnStatus::PsRetOK)
-			cout << "Ps2_GetMeasuringRange failed!" << endl;
-		else
-		{
-			switch ((PsDepthRange)wdrMode.range3)
-			{
-			case PsNearRange:
-			case PsXNearRange:
-			case PsXXNearRange:
-				wdrRange3Slope = wdrSlope = measuringrange.effectDepthMaxNear;
-				break;
-
-			case PsMidRange:
-			case PsXMidRange:
-			case PsXXMidRange:
-				wdrRange3Slope = wdrSlope = measuringrange.effectDepthMaxMid;
-				break;
-
-			case PsFarRange:
-			case PsXFarRange:
-			case PsXXFarRange:
-
-				wdrRange3Slope = wdrSlope = measuringrange.effectDepthMaxFar;
-				break;
-			default:
-				break;
-			}
-			cout << "wdrSlope   ==  wdrRange3Slope " << wdrSlope << endl;
-		}
-	}
 	int destroycount = 0;
 
 	for (;;)
@@ -499,7 +503,7 @@ GET:
 					f_bPointClound = false;
 				}
 				//Display the Depth Image
-				if (f_bWDRMode)
+				if (f_bWDRMode&&dataMode == PsWDR_Depth)
 				{
 					if (depthFrame.depthRange == wdrMode.range1)
 					{
@@ -515,11 +519,6 @@ GET:
 					{
 						Opencv_Depth(wdrRange3Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
 						cv::imshow(wdrDepthRange3ImageWindow, imageMat);
-					}
-					else
-					{
-						Opencv_Depth(wdrSlope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
-						cv::imshow(wdrDepthImageWindow, imageMat);
 					}
 				}
 				else
@@ -682,20 +681,21 @@ GET:
 				cin.clear();
 				cin.ignore(1024, '\n');
 			}
+			PsDataMode t_datamode = PsDepthAndIR_30;
 #ifdef DCAM_800
 			switch (index)
 			{
 			case 0:
-				dataMode = PsDepth_30;
+				t_datamode = PsDepth_30;
 				break;
 			case 1:
-				dataMode = PsIR_30;
+				t_datamode = PsIR_30;
 				break;
 			case 2:
-				dataMode = PsDepthAndIR_30;
+				t_datamode = PsDepthAndIR_30;
 				break;
 			case 3:
-				dataMode = PsWDR_Depth;
+				t_datamode = PsWDR_Depth;
 				break;
 			default:
 				cout << "Unsupported data mode!" << endl;
@@ -705,26 +705,26 @@ GET:
 			switch (index)
 			{
 			case 0:
-				dataMode = PsDepthAndRGB_30;
+				t_datamode = PsDepthAndRGB_30;
 				break;
 			case 1:
-				dataMode = PsIRAndRGB_30;
+				t_datamode = PsIRAndRGB_30;
 				break;
 			case 2:
-				dataMode = PsDepthAndIR_30;
+				t_datamode = PsDepthAndIR_30;
 				break;
 			case 3:
-				dataMode = PsDepthAndIR_15_RGB_30;
+				t_datamode = PsDepthAndIR_15_RGB_30;
 				break;
 			case 4:
-				dataMode = PsWDR_Depth;
+				t_datamode = PsWDR_Depth;
 				break;
 			default:
 				cout << "Unsupported data mode!" << endl;
 				continue;
 			}
 #endif			
-			if (dataMode == PsWDR_Depth)
+			if (t_datamode == PsWDR_Depth)
 			{
 				Ps2_SetWDROutputMode(deviceHandle, sessionIndex, &wdrMode);
 				f_bWDRMode = true;
@@ -734,11 +734,15 @@ GET:
 			{
 				f_bWDRMode = false;
 			}
-			status = Ps2_SetDataMode(deviceHandle, sessionIndex, (PsDataMode)dataMode);
+			status = Ps2_SetDataMode(deviceHandle, sessionIndex, (PsDataMode)t_datamode);
 			if (status != PsRetOK)
 			{
 				cout << "Ps2_SetDataMode  status" << status << endl;
 			}		
+			else
+			{
+				dataMode = t_datamode;
+			}
 			destroycount = 3;
 		}
 		else if ((key == '0') || (key == '1') || (key == '2') || (key == '3') || (key == '4') || (key == '5') || (key == '6') || (key == '7') || (key == '8'))
@@ -880,8 +884,16 @@ GET:
 			threshold += 10;
 			if (threshold > 100)
 				threshold = 0;
-			Ps2_SetThreshold(deviceHandle, sessionIndex, threshold);
-			cout << "Set background threshold value: " << threshold << endl;
+			status = Ps2_SetThreshold(deviceHandle, sessionIndex, threshold);
+
+			if (PsRetOK == status)
+			{
+				cout << "Set background threshold value: " << threshold << endl;
+			}
+			else
+			{
+				cout << "Set background threshold error,check if the datamode is WDR mode" << endl;
+			}
 		}		
 		
 		else if (key == 'V' || key == 'v')

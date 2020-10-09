@@ -1,4 +1,10 @@
-﻿V3.0.2
+﻿V3.1.0
+1. Support json config for DCAM710/DCAM800LITE/DCAM500
+2. Optimize SDK demo
+3. Add Ps2_SetSlaveModeEnabled api for DCAM710/DCAM800LITE/DCAM500
+4. In WDR mode, call Ps2_GetWDRPulseCount/Ps2_SetWDRPulseCount to get/set PulseCount and can not set/get Threshold
+
+V3.0.2
 1. Optimize ImgPreProcess code
 2. Remove ffmpeg library dependencies
 3. Remove the vdpau and X11 library dependencies in Linux SDK

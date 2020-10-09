@@ -490,4 +490,13 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetSerialNumber(PsDeviceHandle device, ui
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetFirmwareVersionNumber(PsDeviceHandle device, uint32_t sessionIndex, char* fw, int length);
 
+/*
+* @brief		Enables or disables the SlaveMode feature
+* @Parameters:
+* @param[in]	device			The handle of the device on which to enable or disable the feature.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[in]	bEnabled		Set to <code>true</code> to enable the feature or <code>false</code> to disable the feature.
+* @Return		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetSlaveModeEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool bEnabled);
 #endif /* VZENSE_API_800_H */
