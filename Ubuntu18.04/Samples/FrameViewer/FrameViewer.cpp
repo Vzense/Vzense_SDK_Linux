@@ -9,6 +9,8 @@
 using namespace std;
 using namespace cv;
 
+void HotPlugStateCallback(const char *uri, int params);
+
 static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, cv::Mat& dispImg)
 {
 	dispImg = cv::Mat(height, width, CV_16UC1, pData);
@@ -79,6 +81,8 @@ GET:
 		this_thread::sleep_for(chrono::seconds(1));
 		goto GET;
 	}
+        Ps2_SetHotPlugStatusCallback(HotPlugStateCallback);
+
 	PsDeviceInfo* pDeviceListInfo = new PsDeviceInfo[deviceCount];
 	status = Ps2_GetDeviceListInfo(pDeviceListInfo, deviceCount);
 	PsDeviceHandle deviceHandle = 0;
@@ -987,4 +991,9 @@ GET:
 	cv::destroyAllWindows();
 #endif
 	return 0;
+}
+
+void HotPlugStateCallback(const char *uri,int status)
+{
+        cout << uri<<"    " << (status==0? "add":"remove" )<<endl ;
 }
