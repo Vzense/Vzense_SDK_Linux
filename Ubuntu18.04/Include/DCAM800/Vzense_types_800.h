@@ -129,6 +129,7 @@ typedef struct
 	PsDeviceType devicetype;
 	char uri[256]; //DeviceType:sn=xxxxx eg:DCAM305:sn=xxxxxxx
 	char fw[50];
+	char alias[64];
 	PsConnectStatus status;
 }PsDeviceInfo;
 
@@ -220,4 +221,5 @@ typedef struct
 * state  0:device added , 1:device removed
 */
 typedef void(*PtrHotPlugStatusCallback)(const char* uri, int state);
+
 #endif /* VZENSE_TYPES_800_H */

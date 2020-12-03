@@ -64,7 +64,7 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_OpenDevice(const char* uri, PsDeviceHandl
 * @param[in] 	device		The handle of the device to close.
 * @return: 		::PsRetOK	if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
-VZENSE_C_API_EXPORT PsReturnStatus Ps2_CloseDevice(PsDeviceHandle device);
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_CloseDevice(PsDeviceHandle* device);
 
 /**
 * @brief 		Starts capturing the image stream indicated by <code>device</code>. \n
@@ -183,7 +183,7 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetPulseCount(PsDeviceHandle device, uint
 * @brief 		Sets the pulse count for the device specified by <code>device</code>.
 * @param[in] 	device			The handle of the device on which to set the pulse count. 
 * @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
-* @param[in] 	pulseCount 		The pulse count value to set.
+* @param[in] 	pulseCount 		The pulse count value to set.For the range 3 and 4,the value is in the range [0,260],for the other range,the value is in the range [0,600].
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetPulseCount(PsDeviceHandle device, uint32_t sessionIndex, uint16_t pulseCount);
@@ -201,7 +201,7 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetGMMGain(PsDeviceHandle device, uint32_
 * @brief 		Sets the device GMM gain on a device.
 * @param[in]	device			The handle of the device on which to set the GMM gain.
 * @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
-* @param[in] 	gmmgain			The GMM gain value to set. See ::PsGMMGain for more information.
+* @param[in] 	gmmgain			The GMM gain value to set. See ::PsGMMGain for more information.The GMM gain value is in the range [0,4095].
 * @return		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetGMMGain(PsDeviceHandle device, uint32_t sessionIndex, PsGMMGain gmmgain);
@@ -499,7 +499,7 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetMapperEnabledRGBToIR(PsDeviceHandle de
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetMapperEnabledRGBToIR(PsDeviceHandle device, uint32_t sessionIndex, bool *bEnabled);
 /**
-* @brief 		Set hotplug status callback function
+* @brief 		Sets hotplug status callback function
 * @param[in]	pCallback		Pointer to the callback function. See ::PtrHotPlugStatusCallback 
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
@@ -544,4 +544,11 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetDSPEnabled(PsDeviceHandle device, uint
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetDSPEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool *bEnabled);
+/**
+* @brief 		Opens the device specified by <code>alias</code>. The device must be subsequently closed using PsCloseDevice().
+* @param[in] 	alias			the alias of the device. See ::PsDeviceInfo for more information.
+* @param[out]	pDevices	the handle of the device on which to open.
+* @return: 		::PsRetOK	if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_OpenDeviceByAlias(const char* alias, PsDeviceHandle* pDevice);
 #endif /* VZENSE_API_305_H */

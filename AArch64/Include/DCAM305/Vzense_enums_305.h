@@ -142,10 +142,12 @@ typedef enum {
 typedef enum
 {
 	NONE,
-	DCAMUPDATE = 1,
 	DCAM305 = 305,
 	DCAM500 = 500,
+	CSI100	= 501,
 	DCAM510 = 510,
+	DCAM550U = 550,
+	DCAM550P = 551,
 	DCAM710 = 710,
 	DCAM800 = 800,
 	DCAM_MIPI = 801,

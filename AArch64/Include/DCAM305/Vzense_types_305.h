@@ -134,6 +134,7 @@ typedef struct
 	PsDeviceType devicetype;
 	char uri[256]; //DeviceType:sn=xxxxx eg:DCAM305:sn=xxxxxxx
 	char fw[50];
+	char alias[64];
 	PsConnectStatus status;
 }PsDeviceInfo;
 
@@ -197,6 +198,7 @@ typedef struct
 	PsDeviceType devicetype;
 	int16_t rotatetype;
 }PsSessionInfo;
+#pragma pack (pop)
 
 /**
 * @brief hotplug status callback function
@@ -205,6 +207,4 @@ typedef struct
 */
 typedef void(*PtrHotPlugStatusCallback)(const char* uri, int state);
 
-#pragma pack (pop)
-
-#endif /* VZENSE_TYPES_H */
+#endif /* VZENSE_TYPES_305_H */

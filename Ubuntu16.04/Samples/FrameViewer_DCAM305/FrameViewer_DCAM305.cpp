@@ -9,6 +9,8 @@
 using namespace std;
 using namespace cv;
 
+void HotPlugStateCallback(const char *uri, int params);
+
 static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, cv::Mat& dispImg)
 {
 	dispImg = cv::Mat(height, width, CV_16UC1, pData);
@@ -62,6 +64,8 @@ GET:
 		this_thread::sleep_for(chrono::seconds(1));
 		goto GET;
 	}
+    Ps2_SetHotPlugStatusCallback(HotPlugStateCallback);
+
 	PsDeviceInfo* pDeviceListInfo = new PsDeviceInfo[deviceCount];
 	status = Ps2_GetDeviceListInfo(pDeviceListInfo, deviceCount);
 	PsDeviceHandle deviceHandle = 0;
@@ -74,7 +78,13 @@ GET:
 	}
 	uint32_t sessionIndex = 0;
 
-	Ps2_StartStream(deviceHandle, sessionIndex);
+	status = Ps2_StartStream(deviceHandle, sessionIndex);
+	if (status != PsReturnStatus::PsRetOK)
+	{
+		cout << "StartStream failed!" << endl;
+		system("pause");
+		return -1;
+	}
 
 	status = Ps2_SetDataMode(deviceHandle, sessionIndex, dataMode);
 	if (status != PsReturnStatus::PsRetOK)
@@ -212,9 +222,8 @@ GET:
 	cout << "T/t: Change background filter threshold value" << endl;
 	cout << "M/m: Change data mode: input corresponding index in terminal:" << endl;
 	cout << "                    0: Output Depth and IR in 15 fps, and RGB in 30fps" << endl;
-	cout << "                    1: Output RGB in 30 fps" << endl;
-	cout << "                    3: Output Depth/IR frames alternatively in 15fps, and RGB in 30fps" << endl;
-	cout << "                    4: Output WDR_Depth and RGB in 30 fps" << endl;
+	cout << "                    1: Only Output RGB in 30 fps" << endl;
+	cout << "                    2: StandBy" << endl;
 	cout << "R/r: Change the RGB resolution: input corresponding index in terminal:" << endl;
 	cout << "                             0: 1920*1080" << endl;
 	cout << "                             1: 1280*720" << endl;
@@ -535,11 +544,15 @@ GET:
 		}
 	}
 
-	status = Ps2_CloseDevice(deviceHandle);
+	status = Ps2_CloseDevice(&deviceHandle);
 	cout << "CloseDevice status: " << status << endl;
 
 	status = Ps2_Shutdown();
 	cout << "Shutdown status: " << status << endl;
 	cv::destroyAllWindows();
 	return 0;
+}
+void HotPlugStateCallback(const char *uri,int status)
+{
+        cout << uri<<"    " << (status==0? "add":"remove" )<<endl ;
 }

@@ -1,3 +1,8 @@
 SUBSYSTEMS=="usb", ATTRS{idProduct}=="0101", ATTRS{idVendor}=="2d40", MODE="0660", SYMLINK+="vzense-imu", GROUP="plugdev"
 SUBSYSTEMS=="usb", ATTRS{idProduct}=="0103", ATTRS{idVendor}=="2d40", MODE="0660", SYMLINK+="vzense-hid", GROUP="plugdev"
-
+SUBSYSTEMS=="usb", ATTRS{idProduct}=="0104", ATTRS{idVendor}=="2d40", MODE="0660", SYMLINK+="vzense-hid", GROUP="plugdev"
+SUBSYSTEMS=="usb", ATTRS{idProduct}=="0105", ATTRS{idVendor}=="2d40", MODE="0660", SYMLINK+="vzense-hid", GROUP="plugdev"
+SUBSYSTEMS=="usb", ATTRS{idProduct}=="0106", ATTRS{idVendor}=="2d40", MODE="0660", SYMLINK+="vzense-hid", GROUP="plugdev"
+SUBSYSTEMS=="usb", ATTRS{idProduct}=="0107", ATTRS{idVendor}=="2d40", MODE="0660", SYMLINK+="vzense-hid", GROUP="plugdev"
+SUBSYSTEMS=="usb", ATTRS{idProduct}=="0108", ATTRS{idVendor}=="2d40", MODE="0660", SYMLINK+="vzense-hid", GROUP="plugdev"
+SUBSYSTEMS=="usb", ATTRS{idProduct}=="0109", ATTRS{idVendor}=="2d40", MODE="0660", SYMLINK+="vzense-hid", GROUP="plugdev"

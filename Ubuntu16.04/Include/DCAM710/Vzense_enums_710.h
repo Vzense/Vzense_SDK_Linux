@@ -109,6 +109,7 @@ typedef enum{
 	PsRetCameraNotOpened = -13,      //!< The camera has not been opened.
 	PsRetInvalidCameraType = -14,    //!< The specified type of camera is invalid.
 	PsRetInvalidParams = -15,        //!< One or more of the parameter values provided are invalid.
+	PsRetNoAdapterConnected = -100,  //!< There is no adapter connected
 
 	PsRetOthers = -255,	             //!< An unknown error occurred.
 }PsReturnStatus;
@@ -181,10 +182,12 @@ typedef enum {
 typedef enum
 {
 	NONE,
-	DCAMUPDATE = 1,
 	DCAM305 = 305,
 	DCAM500 = 500,
+	CSI100	= 501,
 	DCAM510 = 510,
+	DCAM550U = 550,
+	DCAM550P = 551,
 	DCAM710 = 710,
 	DCAM800 = 800,
 	DCAM_MIPI = 801,

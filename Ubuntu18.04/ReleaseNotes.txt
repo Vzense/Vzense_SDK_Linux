@@ -1,4 +1,22 @@
-﻿V3.1.0
+﻿V3.2.2
+1. You need to format the UDisk,if return -1 with the status 'DEVICE_PRE_UPGRADE_IMG_COPY', when upgrade the device
+2. Fix hotplug error,in the case, remove the device,call "Ps2_StopStream"/"Ps2_CloseDevice",then add the device,call "Ps2_OpenDevice"/"Ps2_StartStream"
+
+V3.1.2
+1. Support CSI100,DCAM550U,DCAM550P
+2. Add api
+      Ps2_OpenDeviceByAlias
+	  Ps2_SetTofFrameRate
+	  Ps2_GetTofFrameRate
+	  Ps2_SetStandByEnabled
+
+V3.1.1
+1. Modify "Ps2_CloseDevice(PsDeviceHandle device)" to "Ps2_CloseDevice(PsDeviceHandle* device)",fix crash bug when call "Ps2_CloseDevice" repeatedly
+2. Add check for DCAM305
+3. Do not clean cache in SlaveMode
+4. Add comment for the range value of the PulseCount and GMMGain
+
+V3.1.0
 1. Support json config for DCAM710/DCAM800LITE/DCAM500
 2. Optimize SDK demo
 3. Add Ps2_SetSlaveModeEnabled api for DCAM710/DCAM800LITE/DCAM500

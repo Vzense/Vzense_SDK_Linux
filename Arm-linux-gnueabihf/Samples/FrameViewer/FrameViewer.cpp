@@ -9,6 +9,8 @@
 using namespace std;
 using namespace cv;
 
+void HotPlugStateCallback(const char *uri, int params);
+
 static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, cv::Mat& dispImg)
 {
 	dispImg = cv::Mat(height, width, CV_16UC1, pData);
@@ -47,7 +49,7 @@ int main(int argc, char *argv[])
 
 	PsDepthRange depthRange = PsNearRange;
 	PsDataMode dataMode = PsDepthAndIR_30;
-	PsWDROutputMode wdrMode = { PsWDRTotalRange_Two, PsNearRange, 1, PsFarRange, 1, PsNearRange, 1 };
+	PsWDROutputMode wdrMode = { PsWDRTotalRange_Two, PsNearRange, 1, PsFarRange, 1, PsUnknown, 1 };
 	bool f_bWDRMode = false;
 	bool bWDRStyle = true;
 	status = Ps2_Initialize();
@@ -79,6 +81,8 @@ GET:
 		this_thread::sleep_for(chrono::seconds(1));
 		goto GET;
 	}
+    Ps2_SetHotPlugStatusCallback(HotPlugStateCallback);
+
 	PsDeviceInfo* pDeviceListInfo = new PsDeviceInfo[deviceCount];
 	status = Ps2_GetDeviceListInfo(pDeviceListInfo, deviceCount);
 	PsDeviceHandle deviceHandle = 0;
@@ -91,7 +95,13 @@ GET:
 	}
 	uint32_t sessionIndex = 0;
 
-	Ps2_StartStream(deviceHandle, sessionIndex);
+	status = Ps2_StartStream(deviceHandle, sessionIndex);
+	if (status != PsReturnStatus::PsRetOK)
+	{
+		cout << "StartStream failed!" << endl;
+		system("pause");
+		return -1;
+	}
 
 	PsCameraParameters cameraParameters;
 	status = Ps2_GetCameraParameters(deviceHandle, sessionIndex, PsDepthSensor, &cameraParameters);
@@ -505,17 +515,17 @@ GET:
 				//Display the Depth Image
 				if (f_bWDRMode&&dataMode == PsWDR_Depth)
 				{
-					if (depthFrame.depthRange == wdrMode.range1)
+					if (depthFrame.depthRange == wdrMode.range1&&wdrMode.range1Count!=0)
 					{
 						Opencv_Depth(wdrRange1Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
 						cv::imshow(wdrDepthRange1ImageWindow, imageMat);					
 					}
-					else if (depthFrame.depthRange == wdrMode.range2)
+					else if (depthFrame.depthRange == wdrMode.range2&&wdrMode.range2Count != 0)
 					{
 						Opencv_Depth(wdrRange2Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
 						cv::imshow(wdrDepthRange2ImageWindow, imageMat);
 					}
-					else if (depthFrame.depthRange == wdrMode.range3)
+					else if (depthFrame.depthRange == wdrMode.range3&&wdrMode.range3Count != 0)
 					{
 						Opencv_Depth(wdrRange3Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
 						cv::imshow(wdrDepthRange3ImageWindow, imageMat);
@@ -734,6 +744,49 @@ GET:
 			{
 				f_bWDRMode = false;
 			}
+			if (dataMode == PsWDR_Depth&&t_datamode != PsWDR_Depth)
+			{
+				status = Ps2_GetDepthRange(deviceHandle, sessionIndex, &depthRange);
+				cout << "Get depth range," << " depthRange: " << depthRange << endl;
+				if (status != PsRetOK)
+				{
+					cout << "Get depth range failed! " << endl;
+				}
+				else
+				{
+					status = Ps2_GetMeasuringRange(deviceHandle, sessionIndex, depthRange, &measuringrange);
+					if (status != PsReturnStatus::PsRetOK)
+						cout << "Ps2_GetMeasuringRange failed!" << endl;
+					else
+					{
+						switch (depthRange)
+						{
+						case PsNearRange:
+						case PsXNearRange:
+						case PsXXNearRange:
+							slope = measuringrange.effectDepthMaxNear;
+							break;
+
+						case PsMidRange:
+						case PsXMidRange:
+						case PsXXMidRange:
+							slope = measuringrange.effectDepthMaxMid;
+							break;
+
+						case PsFarRange:
+						case PsXFarRange:
+						case PsXXFarRange:
+
+							slope = measuringrange.effectDepthMaxFar;
+							break;
+						default:
+							break;
+						}
+						cout << "slope  ==  " << slope << endl;
+					}
+				}
+			}
+			 
 			status = Ps2_SetDataMode(deviceHandle, sessionIndex, (PsDataMode)t_datamode);
 			if (status != PsRetOK)
 			{
@@ -979,7 +1032,7 @@ GET:
 #endif	
 	}
 
-	status = Ps2_CloseDevice(deviceHandle);
+	status = Ps2_CloseDevice(&deviceHandle);
 	cout << "CloseDevice status: " << status << endl;
 
 	status = Ps2_Shutdown();
@@ -987,4 +1040,9 @@ GET:
 	cv::destroyAllWindows();
 #endif
 	return 0;
+}
+
+void HotPlugStateCallback(const char *uri,int status)
+{
+        cout << uri<<"    " << (status==0? "add":"remove" )<<endl ;
 }

@@ -9,6 +9,9 @@ VzenseSDK_Linux
 - DCAM800LITE
 - DCAM305
 - DCAM500
+- CSI100
+- DCAM550U
+- DCAM550P
 
 ### Summary Of The Guidelines
 
