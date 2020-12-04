@@ -4,12 +4,11 @@ VzenseSDK_Linux
 
 ### Supported Devices
 
-- DCAM710
-- DCAM800
-- DCAM800LITE
-- DCAM305
-- DCAM500
-- CSI100
+- DCAM710 Support FirmwareVersion: Firmware_DCAM710_20190904_nand_b63.img and later
+- DCAM800 
+- DCAM800LITE Support FirmwareVersion: Firmware_DCAM800LITE_20200818_nand_b10.img and later
+- DCAM305 Support FirmwareVersion: Firmware_DCAM305_20200313_nand_b42.img and later
+- DCAM500 Support FirmwareVersion: Firmware_DCAM500_20200818_nand_b10.img and later
 - DCAM550U
 - DCAM550P
 
