@@ -564,7 +564,13 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetMapperEnabledRGBToDepth(PsDeviceHandle
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetHotPlugStatusCallback(PtrHotPlugStatusCallback pCallback);
-
+/**
+* @brief 		Sets hotplug status callback function for c plus plus
+* @param[in]	pCallback		Pointer to the callback function. See ::PtrHotPlugStatusCallback
+* @param[in]	contex		    Pointer to the object of C++ class
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetHotPlugStatusCallback_(PtrHotPlugStatusCallback_ pCallback, void* contex);
 /**
 * @brief 		Returns the pulse count from the device specified by <code>device</code>.
 * @param[in] 	device			The handle of the device on which to set the pulse count.
@@ -661,9 +667,21 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetStandByEnabled(PsDeviceHandle device, 
 
 /**
 * @brief 		Opens the device specified by <code>alias</code>. The device must be subsequently closed using PsCloseDevice().
-* @param[in] 	alias			the alias of the device. See ::PsDeviceInfo for more information.
+* @param[in] 	alias		the alias of the device. See ::PsDeviceInfo for more information.
 * @param[out]	pDevices	the handle of the device on which to open.
 * @return: 		::PsRetOK	if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_OpenDeviceByAlias(const char* alias, PsDeviceHandle* pDevice);
+
+/**
+* @brief 		Set the waittime of read next frame.
+* @param[in] 	device			The handle of the device on which to enable or disable the feature.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[in] 	time 			The unit is millisecond, the value is in the range (0,65535) and the default value is 350 millisecond.
+* You can change the value according to the frame rate. For example,the frame rate is 30, so the theoretical waittime interval is 33ms, but if set the time value is 20ms,
+* it means the max wait time is 20 ms when capturing next frame, so when call the Ps2_ReadNextFrame, it may return PsRetReadNextFrameTimeOut(-11).
+* so the value range that recommended is [50.350].
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetWaitTimeOfReadNextFrame(PsDeviceHandle device, uint32_t sessionIndex, uint16_t time);
 #endif /* VZENSE_API_710_H */

@@ -1,4 +1,28 @@
-﻿V3.2.2
+﻿V3.2.7
+1. Fix open device by alias error,when run app firstly, add DCAMXX laterly
+2. Modify depthframe'pixelFormat from PixelFormatGray16 to PixelFormatDepthMM16
+
+V3.2.6
+1. Add api
+	Ps2_SetHotPlugStatusCallback_(PtrHotPlugStatusCallback_ pCallback, void* contex)
+2. Optimize SDK code
+
+V3.2.5
+1. Add NoCCD_30 datamode for DCAM5xx
+2. Fix hoplug error in network cable connection 
+
+V3.2.4
+1. Optimize SDK demo, add buffersize check when get raw data
+
+V3.2.3
+1. If the alias is not setted, set sn as alias
+2. Add tmiestamp in PsFrame
+3. Modify the param in api "Ps2_SetHotPlugStatusCallback"
+   from "typedef void(*PtrHotPlugStatusCallback)(const char* uri, int state)"
+   to "typedef void(*PtrHotPlugStatusCallback)(const PsDeviceInfo* pInfo, int state)"
+4. Add api "Ps2_SetWaitTimeOfReadNextFrame"
+ 
+V3.2.2
 1. You need to format the UDisk,if return -1 with the status 'DEVICE_PRE_UPGRADE_IMG_COPY', when upgrade the device
 2. Fix hotplug error,in the case, remove the device,call "Ps2_StopStream"/"Ps2_CloseDevice",then add the device,call "Ps2_OpenDevice"/"Ps2_StartStream"
 

@@ -9,7 +9,7 @@
 using namespace std;
 using namespace cv;
 
-void HotPlugStateCallback(const char *uri, int params);
+void HotPlugStateCallback(const PsDeviceInfo* pInfo, int status);
 
 static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, cv::Mat& dispImg)
 {
@@ -552,7 +552,9 @@ GET:
 	cv::destroyAllWindows();
 	return 0;
 }
-void HotPlugStateCallback(const char *uri,int status)
+
+void HotPlugStateCallback(const PsDeviceInfo* pInfo, int status)
 {
-        cout << uri<<"    " << (status==0? "add":"remove" )<<endl ;
+	cout << "uri " << status << "  " << pInfo->uri << "    " << (status == 0 ? "add" : "remove") << endl;
+	cout << "alia " << status << "  " << pInfo->alias << "    " << (status == 0 ? "add" : "remove") << endl;
 }

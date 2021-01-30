@@ -86,6 +86,14 @@ typedef struct
 	double translation[3];  //!< Location stored as an array of 3 double representing a 3-D translation vector.
 }PsCameraExtrinsicParameters;
 
+typedef struct
+{
+	uint16_t tm_sec;   // seconds after the minute - [0, 60] including leap second
+	uint16_t tm_min;   // minutes after the hour - [0, 59]
+	uint16_t tm_hour;  // hours since midnight - [0, 23]
+	uint16_t tm_msec;  // millisecond after the second - [0, 999]
+}PsTimeStamp;
+
 /**
  * @brief Depth/IR/RGB image frame data.
  */
@@ -101,6 +109,7 @@ typedef struct
 	PsDepthRange   depthRange;    //!< The depth range mode of the current frame. Used only for depth frames.
 	uint16_t       width;		  //!< The width of the frame, in pixels.
 	uint16_t       height;        //!< The height of the frame, in pixels.
+	PsTimeStamp    timestamp;	  //!< The timestamp of the frame.
 }PsFrame;
 
 /**
@@ -202,9 +211,16 @@ typedef struct
 
 /**
 * @brief hotplug status callback function
-* uri    return the uri of the Device, See ::PsDeviceInfo
+* pInfo  return the info of the Device, See ::PsDeviceInfo
 * state  0:device added , 1:device removed
 */
-typedef void(*PtrHotPlugStatusCallback)(const char* uri, int state);
+typedef void(*PtrHotPlugStatusCallback)(const PsDeviceInfo* pInfo, int state);
 
+/**
+* @brief hotplug status callback function for c plus plus
+* pInfo  return the info of the Device, See ::PsDeviceInfo
+* state  0:device added , 1:device removed
+* contex pointer to the object of C++ class
+*/
+typedef void(*PtrHotPlugStatusCallback_)(const PsDeviceInfo* pInfo, int state, void* contex);
 #endif /* VZENSE_TYPES_305_H */

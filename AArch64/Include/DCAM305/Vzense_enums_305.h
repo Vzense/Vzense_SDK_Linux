@@ -96,7 +96,7 @@ typedef enum{
 	PsRetPropertyPointerIsNull = -8, //!< The input property value buffer pointer is null.
 	PsRetPropertySizeNotEnough = -9, //!< The input property value buffer size is too small to store the specified property value.
 	PsRetInvalidDepthRange = -10,    //!< The input depth range mode is invalid.
-	PsRetReadNextFrameError = -11,   //!< An error occurred when capturing the next image frame.
+	PsRetReadNextFrameTimeOut = -11, //!< Capture the next image frame time out.
 	PsRetInputPointerIsNull = -12,   //!< An input pointer parameter is null.
 	PsRetCameraNotOpened = -13,      //!< The camera has not been opened.
 	PsRetInvalidCameraType = -14,    //!< The specified type of camera is invalid.

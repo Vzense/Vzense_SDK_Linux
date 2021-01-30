@@ -9,7 +9,7 @@
 using namespace std;
 using namespace cv;
 
-void HotPlugStateCallback(const char *uri, int params);
+void HotPlugStateCallback(const PsDeviceInfo* pInfo, int params);
 
 static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, cv::Mat& dispImg)
 {
@@ -121,28 +121,6 @@ GET:
 	cout << "K4: " << cameraParameters.k4 << endl;
 	cout << "K5: " << cameraParameters.k5 << endl;
 	cout << "K6: " << cameraParameters.k6 << endl;
-
-
-	PsCameraExtrinsicParameters CameraExtrinsicParameters;
-	status = Ps2_GetCameraExtrinsicParameters(deviceHandle, sessionIndex, &CameraExtrinsicParameters);
-
-	cout << "Get PsGetCameraExtrinsicParameters status: " << status << endl;
-	cout << "Camera rotation: " << endl;
-	cout << CameraExtrinsicParameters.rotation[0] << " "
-		<< CameraExtrinsicParameters.rotation[1] << " "
-		<< CameraExtrinsicParameters.rotation[2] << " "
-		<< CameraExtrinsicParameters.rotation[3] << " "
-		<< CameraExtrinsicParameters.rotation[4] << " "
-		<< CameraExtrinsicParameters.rotation[5] << " "
-		<< CameraExtrinsicParameters.rotation[6] << " "
-		<< CameraExtrinsicParameters.rotation[7] << " "
-		<< CameraExtrinsicParameters.rotation[8] << " "
-		<< endl;
-
-	cout << "Camera transfer: " << endl;
-	cout << CameraExtrinsicParameters.translation[0] << " "
-		<< CameraExtrinsicParameters.translation[1] << " "
-		<< CameraExtrinsicParameters.translation[2] << " " << endl;
 
 	//Get MeasuringRange
 	PsMeasuringRange measuringrange = { 0 };
@@ -414,6 +392,27 @@ GET:
 	cout << "P1: " << cameraParameters.p1 << endl;
 	cout << "P2: " << cameraParameters.p2 << endl;
 
+	PsCameraExtrinsicParameters CameraExtrinsicParameters;
+	status = Ps2_GetCameraExtrinsicParameters(deviceHandle, sessionIndex, &CameraExtrinsicParameters);
+
+	cout << "Get PsGetCameraExtrinsicParameters status: " << status << endl;
+	cout << "Camera rotation: " << endl;
+	cout << CameraExtrinsicParameters.rotation[0] << " "
+		<< CameraExtrinsicParameters.rotation[1] << " "
+		<< CameraExtrinsicParameters.rotation[2] << " "
+		<< CameraExtrinsicParameters.rotation[3] << " "
+		<< CameraExtrinsicParameters.rotation[4] << " "
+		<< CameraExtrinsicParameters.rotation[5] << " "
+		<< CameraExtrinsicParameters.rotation[6] << " "
+		<< CameraExtrinsicParameters.rotation[7] << " "
+		<< CameraExtrinsicParameters.rotation[8] << " "
+		<< endl;
+
+	cout << "Camera transfer: " << endl;
+	cout << CameraExtrinsicParameters.translation[0] << " "
+		<< CameraExtrinsicParameters.translation[1] << " "
+		<< CameraExtrinsicParameters.translation[2] << " " << endl;
+		
 	const string rgbImageWindow = "RGB Image";
 	const string mappedDepthImageWindow = "MappedDepth Image";
 	const string mappedRgbImageWindow = "MappedRGB Image"; 
@@ -1042,7 +1041,8 @@ GET:
 	return 0;
 }
 
-void HotPlugStateCallback(const char *uri,int status)
+void HotPlugStateCallback(const PsDeviceInfo* pInfo, int status)
 {
-        cout << uri<<"    " << (status==0? "add":"remove" )<<endl ;
-}
+	cout << "uri " << status << "  " << pInfo->uri << "    " << (status == 0 ? "add" : "remove") << endl;
+	cout << "alia " << status << "  " << pInfo->alias << "    " << (status == 0 ? "add" : "remove") << endl;
+ }
