@@ -1,4 +1,7 @@
-﻿V3.2.7
+﻿V3.2.8
+1. Modify frameIndex(in PsFrame) counting logic
+
+V3.2.7
 1. Fix open device by alias error,when run app firstly, add DCAMXX laterly
 2. Modify depthframe'pixelFormat from PixelFormatGray16 to PixelFormatDepthMM16
 
