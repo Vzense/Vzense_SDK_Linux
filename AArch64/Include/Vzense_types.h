@@ -7,8 +7,8 @@
 #include "DCAM710/Vzense_types_710.h"
 #elif defined DCAM_305
 #include "DCAM305/Vzense_types_305.h"
-#elif defined DCAM_800
-#include "DCAM800/Vzense_types_800.h"
+#elif defined DCAM_550
+#include "DCAM550/Vzense_types_550.h"
 #endif
 
 #endif /* VZENSE_TYPES_H */

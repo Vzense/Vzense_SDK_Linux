@@ -1,4 +1,72 @@
-﻿V3.2.8
+﻿V3.4.0
+1. Optimize hoplug logic in network connection 
+
+V3.3.13
+1. Optimize code with alias (0001,0001P)
+
+V3.3.12
+1. Fix hoplug error when add a new device into the same USB 
+
+V3.3.11
+1. Optimize hoplug logic in USB connection 
+
+V3.3.10
+1. Modify 550P decode
+
+V3.3.9
+1. Add DCAM550E
+2. For Windows，modify COINIT_MULTITHREADED to COINIT_APARTMENTTHREADED in CoInitializeEx
+
+V3.3.8
+1. Just do resize,for DCAM550P with dsp
+2. Add Ps2_SetSlaveTrigger API for DCAM550
+
+V3.3.7
+1. Optimize ComputeRealDepth logic with DCAM550P
+2. Optimize Connect-Status when call Ps2_CloseDevice
+
+V3.3.6
+1. Support DSP for DCAM550P
+2. Optimize the value returned by the api
+
+V3.3.5
+1. Fix reopen failed, when remove the device and call the api Ps2_OpenDevice or Ps2_StartStream at the same time 
+
+V3.3.4
+1. Fix hotplug error without getting frame (not call the api Ps2_OpenDevice and Ps2_StartStream)
+
+V3.3.3
+1. Fix hotplug error with multiple cameras in linux (added by V3.3.2)
+2. Fix memory leaking in Windows (added by V3.3.2)
+
+V3.3.2
+1. Optimize hoplug logic in network cable connection 
+
+V3.3.0
+1. Fix Ps2_ConvertWorldToDepth API
+2. Add Ps2_GetMappedPointDepthToRGB API for DCAM710
+3. Show FPS in FrameViewer.cpp
+
+V3.2.15
+1. Enum uvc & hid at the same time
+
+V3.2.12
+1. Fix hotplug error with multiple cameras
+
+V3.2.11
+1. Optimize SDK code with multiple cameras, 
+   get the camera info(PsDeviceInfo) firstly, 
+   and then open the camera with the status(PsConnectStatus) is Connected
+
+V3.2.10
+1. Fix error when run multiple applications
+
+V3.2.9
+1. Add api Ps2_GetSDKVersion(char* version, int length)
+2. Support Depth_60 in SDK code ,for DCAM710
+3. Optimize hotplug code
+
+V3.2.8
 1. Modify frameIndex(in PsFrame) counting logic
 
 V3.2.7

@@ -1,14 +1,54 @@
-//Note:DCAM800 has no RGB frame and no use DCAM_305 in Vzense_dcamtype.h
+//Note:DCAM550 has no RGB frame and no use DCAM_305 in Vzense_dcamtype.h
 
 #include <iostream>
 #include <fstream>
 #include <opencv2/opencv.hpp>
 #include "Vzense_api2.h"
 #include <thread>
-
+#ifdef _WIN32
+#include <windows.system.h>
+#else
+#include <sys/timeb.h>
+#endif
+ 
+#define FPS
+#define FPS_LEN 100
 using namespace std;
 using namespace cv;
 
+#ifdef FPS
+
+#ifdef _WIN32
+SYSTEMTIME sys;
+#endif
+long delayT = 0;
+
+int countof_loop_tof = 0;
+long tatoldelay_tof = 0;
+int fps_tof = 0;
+
+int countof_loop_rgb = 0;
+long tatoldelay_rgb = 0;
+int fps_rgb = 0;
+
+int countof_loop_ir = 0;
+long tatoldelay_ir = 0;
+int fps_ir = 0;
+
+int countof_loop_wdr1 = 0;
+long tatoldelay_wdr1 = 0;
+int fps_wdr1 = 0;
+
+
+int countof_loop_wdr2 = 0;
+long tatoldelay_wdr2 = 0;
+int fps_wdr2 = 0;
+
+int countof_loop_wdr3 = 0;
+long tatoldelay_wdr3 = 0;
+int fps_wdr3 = 0;
+
+#endif
 void HotPlugStateCallback(const PsDeviceInfo* pInfo, int params);
 
 static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, cv::Mat& dispImg)
@@ -32,6 +72,7 @@ static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, c
 	circle(dispImg, pointxy, 4, Scalar(color, color, color), -1, 8, 0);
 	putText(dispImg, text, pointxy, FONT_HERSHEY_DUPLEX, 2, Scalar(color, color, color));
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -66,7 +107,7 @@ GET:
 	{
 		cout << "PsGetDeviceCount failed!" << endl;
 
-#ifdef DCAM_800
+#ifdef DCAM_550
 		this_thread::sleep_for(chrono::seconds(1));
 		goto GET;
 #else
@@ -369,7 +410,7 @@ GET:
 		}
 		cout << (int)rangelist.depthrangelist[rangelist.count - 1] << endl;
 	}
-#ifndef DCAM_800
+#ifndef DCAM_550
 
 	//Enable the Depth and RGB synchronize feature
 	Ps2_SetSynchronizeEnabled(deviceHandle, sessionIndex, true);
@@ -427,7 +468,7 @@ GET:
 	cout << "0/1/2...: Change depth range Near/Middle/Far..." << endl;
 	cout << "P/p: Save point cloud data into PointCloud.txt in current directory" << endl;
 	cout << "T/t: Change background filter threshold value" << endl;
-#ifndef DCAM_800
+#ifndef DCAM_550
 	cout << "S/s: Enable or disable the Depth and RGB synchronize feature " << endl;
 	cout << "M/m: Change data mode: input corresponding index in terminal:" << endl;
 	cout << "                    0: Output Depth and RGB in 30 fps" << endl;
@@ -468,7 +509,7 @@ GET:
 		PsFrame irFrame = { 0 };
 		PsFrame wdrDepthFrame = { 0 };
 
-#ifndef DCAM_800
+#ifndef DCAM_550
 		PsFrame rgbFrame = { 0 };
 		PsFrame mappedDepthFrame = { 0 };
 		PsFrame mappedRGBFrame = { 0 };
@@ -477,7 +518,30 @@ GET:
 		// Read one frame before call PsGetFrame
 		PsFrameReady frameReady = { 0 };
 		status = Ps2_ReadNextFrame(deviceHandle, sessionIndex, &frameReady);
+		
+#ifdef FPS
 
+#ifdef _WIN32
+		GetLocalTime(&sys);
+		long dwEnd = sys.wMilliseconds;
+#else
+		struct  timeb   stTimeb;
+		ftime(&stTimeb);
+		long dwEnd = stTimeb.millitm;
+#endif
+		long timedelay = dwEnd - delayT;
+		delayT = dwEnd;
+		if (timedelay < 0) {
+			timedelay += 1000;
+		}
+		tatoldelay_tof += timedelay;
+		tatoldelay_rgb += timedelay;
+		tatoldelay_ir += timedelay;
+		tatoldelay_wdr1 += timedelay;
+		tatoldelay_wdr2 += timedelay;
+		tatoldelay_wdr3 += timedelay;
+
+#endif
 		if (status != PsRetOK)
 		{
 			goto KEY;
@@ -490,6 +554,7 @@ GET:
 
 			if (depthFrame.pFrameData != NULL)
 			{
+
 				if (f_bPointClound)
 				{
 					PointCloudWriter.open("PointCloud.txt");
@@ -516,23 +581,111 @@ GET:
 				{
 					if (depthFrame.depthRange == wdrMode.range1&&wdrMode.range1Count!=0)
 					{
+#ifdef FPS
+						countof_loop_wdr1++;
+						if (countof_loop_wdr1 >= FPS_LEN)
+						{
+							fps_wdr1 = 1000 * FPS_LEN / tatoldelay_wdr1;
+							//cout << fps_tof<<endl;
+							countof_loop_wdr1 = 0;
+							tatoldelay_wdr1 = 0;
+						}
+#endif
 						Opencv_Depth(wdrRange1Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
+#ifdef FPS
+						if (fps_wdr1 != 0)
+						{
+							char fps[20];
+#ifdef _WIN32
+							sprintf_s(fps, "FPS: %d", fps_wdr1);
+#else
+							snprintf(fps, sizeof(fps), "FPS: %d", fps_wdr1);
+#endif
+							putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
+						}
+#endif
 						cv::imshow(wdrDepthRange1ImageWindow, imageMat);					
 					}
 					else if (depthFrame.depthRange == wdrMode.range2&&wdrMode.range2Count != 0)
 					{
+#ifdef FPS
+						countof_loop_wdr2++;
+						if (countof_loop_wdr2 >= FPS_LEN)
+						{
+							fps_wdr2 = 1000 * FPS_LEN / tatoldelay_wdr2;
+							//cout << fps_tof<<endl;
+							countof_loop_wdr2 = 0;
+							tatoldelay_wdr2 = 0;
+						}
+#endif
 						Opencv_Depth(wdrRange2Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
+#ifdef FPS
+						if (fps_wdr2 != 0)
+						{
+							char fps[20];
+#ifdef _WIN32
+							sprintf_s(fps, "FPS: %d", fps_wdr2);
+#else
+							snprintf(fps, sizeof(fps), "FPS: %d", fps_wdr2);
+#endif
+							putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
+						}
+#endif
 						cv::imshow(wdrDepthRange2ImageWindow, imageMat);
 					}
 					else if (depthFrame.depthRange == wdrMode.range3&&wdrMode.range3Count != 0)
 					{
+#ifdef FPS
+						countof_loop_wdr3++;
+						if (countof_loop_wdr3 >= FPS_LEN)
+						{
+							fps_wdr3 = 1000 * FPS_LEN / tatoldelay_wdr3;
+							//cout << fps_tof<<endl;
+							countof_loop_wdr3 = 0;
+							tatoldelay_wdr3 = 0;
+						}
+#endif
 						Opencv_Depth(wdrRange3Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
+#ifdef FPS
+						if (fps_wdr3 != 0)
+						{
+							char fps[20];
+#ifdef _WIN32
+							sprintf_s(fps, "FPS: %d", fps_wdr3);
+#else
+							snprintf(fps, sizeof(fps), "FPS: %d", fps_wdr3);
+#endif
+							putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
+						}
+#endif
 						cv::imshow(wdrDepthRange3ImageWindow, imageMat);
 					}
 				}
 				else
 				{
+#ifdef FPS
+					countof_loop_tof++;
+					if (countof_loop_tof >= FPS_LEN)
+					{
+						fps_tof = 1000 * FPS_LEN / tatoldelay_tof;
+						//cout << fps_tof<<endl;
+						countof_loop_tof = 0;
+						tatoldelay_tof = 0;
+					}
+#endif
 					Opencv_Depth(slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
+#ifdef FPS
+					if (fps_tof != 0)
+					{
+						char fps[20];
+#ifdef _WIN32
+						sprintf_s(fps, "FPS: %d", fps_tof);
+#else
+						snprintf(fps, sizeof(fps), "FPS: %d", fps_tof);
+#endif
+						putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
+					}
+#endif
 					cv::imshow(depthImageWindow, imageMat);
 				}
 			}
@@ -549,11 +702,33 @@ GET:
 
 			if (irFrame.pFrameData != NULL)
 			{
+#ifdef FPS	 
+				countof_loop_ir++;
+				if (countof_loop_ir >= FPS_LEN)
+				{
+					fps_ir = 1000 * FPS_LEN / tatoldelay_ir;
+					//cout << fps_tof << endl;
+					countof_loop_ir = 0;
+					tatoldelay_ir = 0;
+				}		 
+#endif
 				//Display the IR Image
 				imageMat = cv::Mat(irFrame.height, irFrame.width, CV_16UC1, irFrame.pFrameData);
 
 				// Convert 16bit IR pixel (max pixel value is 3840) to 8bit for display
 				imageMat.convertTo(imageMat, CV_8U, 255.0 / 3840);
+#ifdef FPS
+				if (fps_ir != 0)
+				{
+					char fps[20];
+#ifdef _WIN32
+					sprintf_s(fps, "FPS: %d", fps_ir);
+#else
+					snprintf(fps, sizeof(fps), "FPS: %d", fps_ir);
+#endif
+					putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(255, 255, 255));
+				}
+#endif
 				cv::imshow(irImageWindow, imageMat);
 			}
 			else
@@ -569,6 +744,16 @@ GET:
 			status = Ps2_GetFrame(deviceHandle, sessionIndex, PsWDRDepthFrame, &wdrDepthFrame);
 			if (wdrDepthFrame.pFrameData != NULL)
 			{
+#ifdef FPS			 
+				countof_loop_tof++;
+				if (countof_loop_tof >= FPS_LEN)
+				{
+					fps_tof = 1000 * FPS_LEN / tatoldelay_tof;
+					//cout << fps_tof << endl;
+					countof_loop_tof = 0;
+					tatoldelay_tof = 0;
+				}				 
+#endif
 				if (f_bPointClound)
 				{
 					PointCloudWriter.open("PointCloud.txt");
@@ -592,6 +777,18 @@ GET:
 				}
 				//Display the WDR Depth Image
 				Opencv_Depth(wdrSlope, wdrDepthFrame.height, wdrDepthFrame.width, wdrDepthFrame.pFrameData, imageMat);
+#ifdef FPS
+				if (fps_tof != 0)
+				{
+					char fps[20];
+#ifdef _WIN32
+					sprintf_s(fps, "FPS: %d", fps_tof);
+#else
+					snprintf(fps, sizeof(fps), "FPS: %d", fps_tof);
+#endif
+					putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
+				}
+#endif
 				cv::imshow(wdrDepthImageWindow, imageMat);
 			}
 			else
@@ -600,7 +797,7 @@ GET:
 			}
 		}
 
-#ifndef DCAM_800
+#ifndef DCAM_550
 
 		//Get RGB frame, RGB frame only output in following data mode
 		if (1 == frameReady.rgb)
@@ -609,8 +806,31 @@ GET:
 
 			if (rgbFrame.pFrameData != NULL)
 			{
+#ifdef FPS
+				countof_loop_rgb++;
+				if (countof_loop_rgb >= FPS_LEN)
+				{
+					fps_rgb = 1000 * FPS_LEN / tatoldelay_rgb;
+					//cout << fps_tof<<endl;
+					countof_loop_rgb = 0;
+					tatoldelay_rgb = 0;
+				}
+#endif
 				//Display the RGB Image
 				imageMat = cv::Mat(rgbFrame.height, rgbFrame.width, CV_8UC3, rgbFrame.pFrameData);
+
+#ifdef FPS
+				if (fps_rgb != 0)
+				{
+					char fps[20];
+#ifdef _WIN32
+					sprintf_s(fps, "FPS: %d", fps_rgb);
+#else
+					snprintf(fps, sizeof(fps), "FPS: %d", fps_rgb);
+#endif
+					putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
+				}
+#endif
 				cv::imshow(rgbImageWindow, imageMat);
 			}
 			else
@@ -668,7 +888,7 @@ GET:
 
 		if (key == 'M' || key == 'm')
 		{
-#ifdef DCAM_800
+#ifdef DCAM_550
 			cout << "Selection: 0:Depth_30; 1:Ir_30; 2:DepthAndIR_30; 3:WDR_Depth" << endl;
 #else
 			cout << "Selection: 0:DepthAndRgb_30; 1:IrAndRgb_30; 2:DepthAndIR_30; 3:PsDepthAndIR_15_RGB_30; 4:WDR_Depth" << endl;
@@ -691,7 +911,7 @@ GET:
 				cin.ignore(1024, '\n');
 			}
 			PsDataMode t_datamode = PsDepthAndIR_30;
-#ifdef DCAM_800
+#ifdef DCAM_550
 			switch (index)
 			{
 			case 0:
@@ -796,6 +1016,33 @@ GET:
 				dataMode = t_datamode;
 			}
 			destroycount = 3;
+#ifdef FPS
+			delayT = 0;
+
+			countof_loop_tof = 0;
+			tatoldelay_tof = 0;
+			fps_tof = 0;
+
+			countof_loop_rgb = 0;
+			tatoldelay_rgb = 0;
+			fps_rgb = 0;
+
+			countof_loop_ir = 0;
+			tatoldelay_ir = 0;
+			fps_ir = 0;
+
+			countof_loop_wdr1 = 0;
+			tatoldelay_wdr1 = 0;
+			fps_wdr1 = 0;
+
+			countof_loop_wdr2 = 0;
+			tatoldelay_wdr2 = 0;
+			fps_wdr2 = 0;
+
+			countof_loop_wdr3 = 0;
+			tatoldelay_wdr3 = 0;
+			fps_wdr3 = 0;
+#endif
 		}
 		else if ((key == '0') || (key == '1') || (key == '2') || (key == '3') || (key == '4') || (key == '5') || (key == '6') || (key == '7') || (key == '8'))
 		{
@@ -908,7 +1155,7 @@ GET:
 		}		
 		else if (key == 'P' || key == 'p')
 		{
-#ifdef DCAM_800
+#ifdef DCAM_550
 			if (dataMode != PsIR_30)
 			{
 				f_bPointClound = true;
@@ -961,12 +1208,39 @@ GET:
 			{
 				cout << "Set WDR Style " << (bWDRStyle ? PsWDR_ALTERNATION : PsWDR_FUSION) << "  satus : " << status << endl;
 			}
+#ifdef FPS
+			delayT = 0;
+
+			countof_loop_tof = 0;
+			tatoldelay_tof = 0;
+			fps_tof = 0;
+
+			countof_loop_rgb = 0;
+			tatoldelay_rgb = 0;
+			fps_rgb = 0;
+
+			countof_loop_ir = 0;
+			tatoldelay_ir = 0;
+			fps_ir = 0;
+
+			countof_loop_wdr1 = 0;
+			tatoldelay_wdr1 = 0;
+			fps_wdr1 = 0;
+
+			countof_loop_wdr2 = 0;
+			tatoldelay_wdr2 = 0;
+			fps_wdr2 = 0;
+
+			countof_loop_wdr3 = 0;
+			tatoldelay_wdr3 = 0;
+			fps_wdr3 = 0;
+#endif
 		}
 		else if (key == 27)	//ESC Pressed
 		{
 			break;
 		}
-#ifndef DCAM_800
+#ifndef DCAM_550
 		else if (key == 'S' || key == 's')
 		{
 			status = Ps2_SetSynchronizeEnabled(deviceHandle, sessionIndex, f_bSync);

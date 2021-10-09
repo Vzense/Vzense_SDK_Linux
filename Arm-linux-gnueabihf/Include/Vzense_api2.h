@@ -19,8 +19,8 @@
 #include "DCAM710/Vzense_api_710.h"
 #elif defined DCAM_305
 #include "DCAM305/Vzense_api_305.h"
-#elif defined DCAM_800
-#include "DCAM800/Vzense_api_800.h"
+#elif defined DCAM_550
+#include "DCAM550/Vzense_api_550.h"
 #endif
 
 #endif /* VZENSE_API2_H */

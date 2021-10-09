@@ -8,15 +8,15 @@
  */
 typedef enum {
 	PsUnknown = -1,
-	PsNearRange = 0,               //!< Range0 - 1m
-	PsMidRange = 1,                //!< Range1 - 2m
-	PsFarRange = 2,                //!< Range2 - 4m	
-	PsXNearRange = 3,              //!< Range3 - 5m
-	PsXMidRange = 4,               //!< Range4 - 7m (NoCal)
-	PsXFarRange = 5,               //!< Range5 - 7m (NoCal)
-	PsXXNearRange = 6,             //!< Range6 - 9m (NoCal)
-	PsXXMidRange = 7,              //!< Range7 - 11m (NoCal)
-	PsXXFarRange = 8               //!< Range8 - 15m (NoCal)
+	PsNearRange = 0,               
+	PsMidRange = 1,                
+	PsFarRange = 2,                
+	PsXNearRange = 3,              
+	PsXMidRange = 4,               
+	PsXFarRange = 5,               
+	PsXXNearRange = 6,             
+	PsXXMidRange = 7,              
+	PsXXFarRange = 8               
 }PsDepthRange;
 
 /** 
@@ -84,23 +84,34 @@ typedef enum{
  * 		  <code>PsRetOK = 0</code> means the API successfully completed its operation.\n 
  * 		  All other codes indicate a device, parameter, or API usage error.
  */
-typedef enum{
-	PsRetOK = 0,                     //!< The function completed successfully.
-	PsRetNoDeviceConnected = -1,     //!< There is no depth camera connected or the camera has not been connected correctly. Check the hardware connection or try unplugging and re-plugging the USB cable.
-	PsRetInvalidDeviceIndex = -2,    //!< The input device index is invalid.
-	PsRetDevicePointerIsNull = -3,   //!< The device structure pointer is null.
-	PsRetInvalidFrameType = -4,      //!< The input frame type is invalid.
-	PsRetFramePointerIsNull = -5,    //!< The output frame buffer is null.
-	PsRetNoPropertyValueGet = -6,    //!< Cannot get the value for the specified property.
-	PsRetNoPropertyValueSet = -7,    //!< Cannot set the value for the specified property.
-	PsRetPropertyPointerIsNull = -8, //!< The input property value buffer pointer is null.
-	PsRetPropertySizeNotEnough = -9, //!< The input property value buffer size is too small to store the specified property value.
-	PsRetInvalidDepthRange = -10,    //!< The input depth range mode is invalid.
-	PsRetReadNextFrameTimeOut = -11, //!< Capture the next image frame time out.
-	PsRetInputPointerIsNull = -12,   //!< An input pointer parameter is null.
-	PsRetCameraNotOpened = -13,      //!< The camera has not been opened.
-	PsRetInvalidCameraType = -14,    //!< The specified type of camera is invalid.
-	PsRetInvalidParams = -15,        //!< One or more of the parameter values provided are invalid.
+typedef enum
+{
+    PsRetOK                         =  0,   //!< The function completed successfully.
+    PsRetNoDeviceConnected          = -1,   //!< There is no depth camera connected or the camera has not been connected correctly. Check the hardware connection or try unplugging and re-plugging the USB cable.
+    PsRetInvalidDeviceIndex         = -2,   //!< The input device index is invalid.
+    PsRetDevicePointerIsNull        = -3,   //!< The device structure pointer is null.
+    PsRetInvalidFrameType           = -4,   //!< The input frame type is invalid.
+    PsRetFramePointerIsNull         = -5,   //!< The output frame buffer is null.
+    PsRetNoPropertyValueGet         = -6,   //!< Cannot get the value for the specified property.
+    PsRetNoPropertyValueSet         = -7,   //!< Cannot set the value for the specified property.
+    PsRetPropertyPointerIsNull      = -8,   //!< The input property value buffer pointer is null.
+    PsRetPropertySizeNotEnough      = -9,   //!< The input property value buffer size is too small to store the specified property value.
+    PsRetInvalidDepthRange          = -10,  //!< The input depth range mode is invalid.
+    PsRetReadNextFrameTimeOut       = -11,  //!< Capture the next image frame time out.
+    PsRetInputPointerIsNull         = -12,  //!< An input pointer parameter is null.
+    PsRetCameraNotOpened            = -13,  //!< The camera has not been opened.
+    PsRetInvalidCameraType          = -14,  //!< The specified type of camera is invalid.
+    PsRetInvalidParams              = -15,  //!< One or more of the parameter values provided are invalid.
+    PsRetCurrentVersionNotSupport   = -16,  //!< This feature is not supported in the current version.
+    PsRetUpgradeImgError            = -17,  //!< There is an error in the upgrade file.
+    PsRetUpgradeImgPathTooLong      = -18,  //!< Upgrade file path length greater than 260.
+	PsRetUpgradeCallbackNotSet		= -19,  //!< Ps2_SetUpgradeStatusCallback is not called.
+	PsRetNoAdapterConnected			= -100,	//!< There is no adapter connected
+	PsRetReInitialized				= -101,	//!< The SDK has been Initialized
+	PsRetNoInitialized				= -102,	//!< The SDK has bot been Initialized
+	PsRetCameraOpened				= -103,	//!< The camera has been opened.
+	PsRetCmdError					= -104,	//!< Set/Get cmd control error
+	PsRetCmdSyncTimeOut				= -105,	//!< Set cmd ok.but time out for the sync return 
 
 	PsRetOthers = -255,	             //!< An unknown error occurred.
 }PsReturnStatus;

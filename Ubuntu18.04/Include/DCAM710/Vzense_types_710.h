@@ -49,6 +49,15 @@ typedef struct
 }PsVector3f;
 
 /**
+ * @brief Stores the x, y, and z components of a 2D vector.
+ */
+typedef struct
+{
+	uint16_t x;
+	uint16_t y;
+}PsVector2u16;
+
+/**
  * @brief Contains depth information for a given pixel.
  */
 typedef struct
@@ -189,39 +198,6 @@ typedef struct
 	uint16_t	effectDepthMinFar;
 }PsMeasuringRange;
 
-union IPAddr
-{
-	uint32_t ip_int32;
-	struct
-	{
-		uint8_t s3;
-		uint8_t s2;
-		uint8_t s1;
-		uint8_t s0;
-	}ip_int8;
-};
-
-typedef struct
-{
-	PsLinkType linkType;
-	union LinkInfo
-	{
-		struct Socket
-		{
-			IPAddr ip;
-		}socket;
-		struct USB
-		{
-			int16_t vid;
-			int16_t pid;
-		}usb;
-	}linkInfo;
-	PsDataMode* pSupportModeList;
-	int supportModeListLen;
-	PsDeviceType devicetype;
-	int16_t rotatetype;
-}PsSessionInfo;
-
 typedef struct
 {
 	uint8_t range;
@@ -237,8 +213,8 @@ typedef struct
 typedef struct
 {
  	uint16_t    pulseCount1;      //!< The pulseCount of the first range.
-	uint16_t    pulseCount2;      //!< The pulseCount of the first range.
-	uint16_t    pulseCount3;      //!< The pulseCount of the first range.
+	uint16_t    pulseCount2;      //!< The pulseCount of the second range.
+	uint16_t    pulseCount3;      //!< The pulseCount of the third range.
 	uint8_t	    option;
 }PsWDRPulseCount;
 

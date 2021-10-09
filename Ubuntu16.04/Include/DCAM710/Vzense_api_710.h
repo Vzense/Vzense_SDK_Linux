@@ -684,4 +684,25 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_OpenDeviceByAlias(const char* alias, PsDe
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetWaitTimeOfReadNextFrame(PsDeviceHandle device, uint32_t sessionIndex, uint16_t time);
+
+/**
+* @brief 		Gets the version of SDK.
+* @param[in] 	version 		Pointer to a variable in which to store the returned version value.
+* @param[in] 	length 			The maximum length is 63 bytes.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetSDKVersion(char* version, int length);
+
+/**
+* @brief 		Returns the point value of the frame that the mapping of the depth image to RGB space.
+* @param[in]	device			The handle of the device on which to enable or disable the feature.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[in]	pointInDepth	The point in depth frame.
+* @param[in]	rgbSize			The size(x = w,y = h) of rgb frame.
+
+* @param[out]	pPointInRGB		The point in the rgb frame.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetMappedPointDepthToRGB(const PsDeviceHandle device, const uint32_t sessionIndex, const PsDepthVector3 depthPoint, const PsVector2u16 rgbSize, PsVector2u16* pPosInRGB);
+
 #endif /* VZENSE_API_710_H */
