@@ -1,4 +1,24 @@
-﻿V3.4.0
+﻿V3.4.4
+1. Optimize SDK code
+
+V3.4.3
+1. Move callback to thread for processing
+
+V3.4.2
+1. Fix Ps2_ReadNextFrame error, after hoplug logic in network connection 
+2. Optimize SDK code
+3. Support upgrade Firmware for DCAM550(U & P),Support upgrade Json config for DCAM710 and DCAM550(U & P)
+
+V3.4.1
+1. Fix upgrade json file error in linux with USB connection
+
+V3.3.16
+1. Optimize code when remove the device(in network connection) and call the api Ps2_OpenDevice or Ps2_StartStream at the same time
+
+V3.3.15
+1. Optimize quick plug network cable logic in linux
+
+V3.3.14(V3.4.0)
 1. Optimize hoplug logic in network connection 
 
 V3.3.13
