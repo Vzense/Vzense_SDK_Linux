@@ -37,19 +37,8 @@ typedef enum{
  * @brief Camera device properties to get or set on a device.
  */
 typedef enum{
-	PsPropertySN_Str = 5,           //!< Device serial number (e.g.PD7110CGC9270020W). The maximum length is 63 bytes.
-	PsPropertyFWVer_Str = 6,        //!< Device firmware version number (e.g. DCAM710_c086_pc_sv0.01_R6_20180917_b35). The maximum length is 63 bytes.
-	PsPropertyHWVer_Str = 7,        //!< Device hardware version number (e.g. R6). The maximum length is 63 bytes.
-	PsPropertyDataMode_UInt8 = 8,   //!< Sets the data mode when invoking ::PsSetDataMode(). See ::PsDataMode for more information.
 	PsPropertyDataModeList = 9,		//!< Gets the data mode lists that the device support
 	PsPropertyDepthRangeList = 10,	//!< Gets the depth range lists that the device support
-
-
-	PsPropertyDeviceUpgradeFlag = 11,	//!< Sets Gets the network device UpgradeFlag
-	PsPropertyDeviceMACAddr = 13,		//!< Sets Gets the network device MACAddr 
-	PsPropertyDeviceIPAddr = 15,		//!< Sets Gets the network device IPAddress
-	PsPropertyDeviceSubnetMask = 16		//!< Sets Gets the network device SubnetMask
-
 }PsPropertyType;
 
 /**
@@ -111,6 +100,7 @@ typedef enum
 	PsRetCameraOpened				= -103,	//!< The camera has been opened.
 	PsRetCmdError					= -104,	//!< Set/Get cmd control error
 	PsRetCmdSyncTimeOut				= -105,	//!< Set cmd ok.but time out for the sync return 
+	PsRetIPNotMatch					= -106,	//!< IP is not in the same network segment
 
 	PsRetOthers = -255,	             //!< An unknown error occurred.
 }PsReturnStatus;
@@ -135,9 +125,7 @@ typedef enum {
  */
 typedef enum {
 	PsStreamDepth = 0,             //!< Depth Stream
-	PsStreamIR = 1,                //!< IR Stream
-	PsStreamAudio = 3,             //!< Audio Stream
-	PsStreamIMU = 4                //!< IMU Data Stream
+	PsStreamIR = 1                 //!< IR Stream
 }PsStreamType;
 
 typedef enum
@@ -165,11 +153,16 @@ typedef enum
 	DCAM550U = 550,
 	DCAM550P = 551,
 	DCAM550E = 552,
+	DCAM560 = 560,
+	DCAM560CPRO = 561,
+	DCAM560CLITE = 562,
 	DCAM710 = 710,
 	DCAM800 = 800,
 	DCAM_MIPI = 801,
 	DCAM800LITE = 802,
 	DCAM800LITEUSB = 803,
+	DCAM101 = 804,
+
 	MAX,
 }PsDeviceType;
 #endif /* VZENSE_ENUMS_550_H */

@@ -40,10 +40,6 @@ typedef enum{
  * @brief Camera device properties to get or set on a device.
  */
 typedef enum{
-	PsPropertySN_Str = 5,           //!< Device serial number (e.g.PD7110CGC9270020W). The maximum length is 63 bytes.
-	PsPropertyFWVer_Str = 6,        //!< Device firmware version number (e.g. DCAM710_c086_pc_sv0.01_R6_20180917_b35). The maximum length is 63 bytes.
-	PsPropertyHWVer_Str = 7,        //!< Device hardware version number (e.g. R6). The maximum length is 63 bytes.
-	PsPropertyDataMode_UInt8 = 8,   //!< Sets the data mode when invoking ::PsSetDataMode(). See ::PsDataMode for more information.
 	PsPropertyDataModeList = 9,		//!< Gets the data mode lists that the device support
 	PsPropertyDepthRangeList = 10,	//!< Gets the depth range lists that the device support
 }PsPropertyType;
@@ -54,7 +50,6 @@ typedef enum{
 typedef enum{
 	PsDepthFrame = 0,              //!< Depth frame with 16 bits per pixel in millimeters.
 	PsIRFrame = 1,                 //!< IR frame with 16 bits per pixel.
-	PsGrayFrame = 2,               //!< Mono gray frame with 8 bits per pixel. Not current available on the DCAM710.
 	PsRGBFrame = 3,                //!< RGB frame with 24 bits per pixel in RGB/BGR format.
 	PsMappedRGBFrame = 4,          //!< RGB frame with 24 bits per pixel in RGB/BGR format, that is mapped to depth camera space where the resolution is the same as the depth frame's resolution.\n 
 	                               //!< This frame type can be enabled using ::PsSetMapperEnabledDepthToRGB().
@@ -62,7 +57,6 @@ typedef enum{
 	                               //!< This frame type can be enabled using ::PsSetMapperEnabledRGBToDepth().
 	PsMappedIRFrame = 6,           //!< IR frame with 16 bits per pixel that is mapped to RGB camera space where the resolution is the same as the RGB frame's resolution.\n 
 	                               //!< This frame type can be enabled using ::PsSetMapperEnabledRGBToIR().
-	PsConfidenceFrame = 8,         //!< Confidence frame with 16 bits per pixel.
 	PsWDRDepthFrame = 9            //!< WDR depth frame with 16 bits per pixel in millimeters. This only takes effect when the data mode set to ::PsWDR_Depth.
 }PsFrameType;
 
@@ -124,15 +118,6 @@ typedef enum
 	PsRetOthers = -255,	             //!< An unknown error occurred.
 }PsReturnStatus;
 
-/** 
- * @brief Specifies the filter type.
- */
-typedef enum
-{
-	PsComputeRealDepthFilter = 0,   //!< Compute the real depth, in the depth camera coordinate system. Enabled by default.
-	PsSmoothingFilter,              //!< Smoothing filter. Enabled by default.
-}PsFilterType;
-
 /**
  * @brief Specifies the number of depth ranges defined for WDR. Currently only two or three ranges are supported (e.g. Near/Far or Near/Mid/Far).
  */
@@ -154,9 +139,7 @@ typedef enum {
 typedef enum {
 	PsStreamDepth = 0,             //!< Depth Stream
 	PsStreamIR = 1,                //!< IR Stream
-	PsStreamRGB = 2,               //!< RGB Stream
-	PsStreamAudio = 3,             //!< Audio Stream
-	PsStreamIMU = 4                //!< IMU Data Stream
+	PsStreamRGB = 2                //!< RGB Stream
 }PsStreamType;
 
 /**	@brief	Resolution 
@@ -167,12 +150,6 @@ typedef enum {
 	PsRGB_Resolution_640_480 = 2,
 	PsRGB_Resolution_640_360 = 3,
 }PsResolution;
-
-//typedef enum {
-//	PsScanFace = 1,               															// Resolution of RGB can be set by PsSetFrameMode api, which support 1920* 
-//	PsScanCode = 2,               															// Resolution of RGB can be set by PsSetFrameMode api, which support 1920* 
-//	PsStandBy = 3,               															// Resolution of RGB can be set by PsSetFrameMode api, which support 1920* 
-//}PsTecentMode;
 
 typedef enum
 {
@@ -198,11 +175,17 @@ typedef enum
 	DCAM510 = 510,
 	DCAM550U = 550,
 	DCAM550P = 551,
+	DCAM550E = 552,
+	DCAM560 = 560,
+	DCAM560CPRO = 561,
+	DCAM560CLITE = 562,
 	DCAM710 = 710,
 	DCAM800 = 800,
 	DCAM_MIPI = 801,
 	DCAM800LITE = 802,
 	DCAM800LITEUSB = 803,
+	DCAM101 = 804,
+
 	MAX,
 }PsDeviceType;
 #endif /* VZENSE_ENUMS_710_H */

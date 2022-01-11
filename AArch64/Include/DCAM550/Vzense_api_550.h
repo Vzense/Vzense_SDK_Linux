@@ -565,4 +565,22 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetSDKVersion(char* version, int length);
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetSlaveTrigger(PsDeviceHandle device, uint32_t sessionIndex);
+
+/**
+* @brief 		Gets IP from the device specified by <code>uri</code>. 
+* @param[in] 	uri			the uri of the device. See ::PsDeviceInfo for more information.
+* @param[out]	ip			Pointer to a buffer in which to store the device IP. the buffer default size is 16. 
+* @return: 		::PsRetOK	if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetDeviceIP(const char* uri, char* ip);
+
+/**
+* @brief 		Gets the MAC from the device specified by <code>device</code>.
+* @param[in] 	device			The handle of the device.
+* @param[in] 	sessionIndex	The index of the session.
+* @param[out]	mac				Pointer to a buffer in which to store the device MAC. the buffer default size is 17. 
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetDeviceMAC(PsDeviceHandle device, uint32_t sessionIndex, char* mac);
+
 #endif /* VZENSE_API_550_H */

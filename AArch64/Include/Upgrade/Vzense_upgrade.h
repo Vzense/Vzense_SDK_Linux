@@ -67,7 +67,7 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetUpgradeStatusCallback(PsDeviceHandle d
 * @brief 		Sets upgrade status callback function
 * @param[in] 	device			The handle of the device on which to set the pulse count.
 * @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
-* @param[in]	pImgPath		Pointer to the path of firmware file.
+* @param[in]	pImgPath		Pointer to the path of firmware file. For DCAM560, do not use Chinese path
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_StartUpgradeFirmWare(PsDeviceHandle device, uint32_t sessionIndex, char* pImgPath);

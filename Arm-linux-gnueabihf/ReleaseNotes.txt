@@ -1,4 +1,25 @@
-﻿V3.4.4
+﻿V3.4.8
+1. Add API for DCAM560C
+	Ps2_SetRGBFrequencyOfPowerLine
+	Ps2_GetRGBFrequencyOfPowerLine
+
+V3.4.7
+1. Add API for DCAM560C
+	Ps2_GetDeviceIP
+	Ps2_GetDeviceMAC
+	Ps2_SetRGBBrightness
+	Ps2_GetRGBBrightness
+	Ps2_SetRGBExposure
+	Ps2_GetRGBExposure
+2. Set default value false for SpatialFilter
+
+V3.4.6
+1. Fix mapping error and get RGB resloution error for DCAM560C
+
+V3.4.5
+1. Add DCAM560 DCAM560C
+
+V3.4.4
 1. Optimize SDK code
 
 V3.4.3
