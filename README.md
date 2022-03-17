@@ -10,12 +10,23 @@ VzenseSDK_Linux
 - DCAM550P
 - DCAM560C
 
+### Supported Platform
+
+- Ubuntu16.04, 18.04, 20.04 (x86_64 platform), e.g. intel i5,i7
+- arm64 embedded platform, e.g. Nvidia Jetson, NXP IMX8, RK3399
+- arm32 embedded platform, e.g. RK3288
+
 ### Folder description
 
-- Arm-linux-gnueabihf: 32-bit, compiler is arm-linux-gnueabihf(v5.4.0)
-- AArch64: 64-bit, compiler is aarch64-linux-gnu(v5.4.0)
-- Ubuntu16.04: 64-bit, compiler is x86_64-linux-gnu(v5.4.0)
-- Ubuntu18.04: 64-bit, compiler is x86_64-linux-gnu(v7.5.0)
+-  **Arm-linux-gnueabihf** : 
+    arm32 SDK package that is developed for arm32 platform, use standard compiler arm-linux-gnueabihf(v5.4.0)
+- AArch64: 
+    arm64 SDK package that is developed for aarch64 platform, use standard compiler aarch64-linux-gnu(v5.4.0)
+- Ubuntu16.04: 
+    Ubuntu16.04 PC SDK package that is developed for personla computer platform(x86_64), use standard compiler x86_64-linux-gnu(v5.4.0)
+- Ubuntu18.04: 
+    Ubuntu18.04 PC SDK package that is developed for personal computer platform(x86_64), use standard compiler x86_64-linux-gnu(v7.5.0)
+    Ubuntu18.04 SDK package compatible with Ubuntu20.04
 
 ### Summary Of The Guidelines
 
