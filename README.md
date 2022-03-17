@@ -10,6 +10,13 @@ VzenseSDK_Linux
 - DCAM550P
 - DCAM560C
 
+### Folder description
+
+- Arm-linux-gnueabihf: 32-bit, compiler is arm-linux-gnueabihf(v5.4.0)
+- AArch64: 64-bit, compiler is aarch64-linux-gnu(v5.4.0)
+- Ubuntu16.04: 64-bit, compiler is x86_64-linux-gnu(v5.4.0)
+- Ubuntu18.04: 64-bit, compiler is x86_64-linux-gnu(v7.5.0)
+
 ### Summary Of The Guidelines
 
 - Choose the right base branch;
