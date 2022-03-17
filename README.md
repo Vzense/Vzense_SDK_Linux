@@ -18,13 +18,17 @@ VzenseSDK_Linux
 
 ### Folder description
 
--  **Arm-linux-gnueabihf** : 
+-   **Arm-linux-gnueabihf** 
+
     arm32 SDK package that is developed for arm32 platform, use standard compiler arm-linux-gnueabihf(v5.4.0)
-- AArch64: 
+-   **AArch64**  
+
     arm64 SDK package that is developed for aarch64 platform, use standard compiler aarch64-linux-gnu(v5.4.0)
-- Ubuntu16.04: 
+-  **Ubuntu16.04** 
+
     Ubuntu16.04 PC SDK package that is developed for personla computer platform(x86_64), use standard compiler x86_64-linux-gnu(v5.4.0)
-- Ubuntu18.04: 
+-  **Ubuntu18.04** 
+
     Ubuntu18.04 PC SDK package that is developed for personal computer platform(x86_64), use standard compiler x86_64-linux-gnu(v7.5.0)
     Ubuntu18.04 SDK package compatible with Ubuntu20.04
 
