@@ -1,4 +1,36 @@
-﻿V3.4.8
+﻿V3.4.16
+1. Optimize code with that has no '/dev/hidraw' in linux
+2. Modify the usage of SDK header files (in 'Include'),and previous usage is still available
+
+V3.4.15
+1. Optimize code and add protect
+
+V3.4.14
+1. Fix Segmentation fault in linux when call the api Ps2_OpenDevice with network cable connection 
+2. Fix getting rgb-intrinsic error for DCAM560C
+
+V3.4.13
+1. Optimizate mapping operation
+
+V3.4.12
+1. Add protect for that change camer-mode into upgrade mode,but not do upgrade operation 
+2. Add protect for that has no '/dev/hidraw' in linux
+3. Unify the implementation method of post-processing library with DCAM560C and 
+   support the original implementation with the api Ps2_SetLegacyAlgorithmicEnabled
+
+V3.4.11
+1. Optimize code when remove the device(in network connection) that without Opened  
+
+V3.4.10
+1. Modiy Ps2_GetWDRPulseCount for the DCAM with network cable connection 
+	
+V3.4.9
+1. Add API to reboot the camera
+	Ps2_RebootCamera
+2. Modify doc
+3. Support wireless network card
+	
+V3.4.8
 1. Add API for DCAM560C
 	Ps2_SetRGBFrequencyOfPowerLine
 	Ps2_GetRGBFrequencyOfPowerLine

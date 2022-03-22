@@ -14,7 +14,11 @@
 * Welcome to the Vzense API documentation. This documentation enables you to quickly get started in your development efforts to programmatically interact with the Vzense TOF RGBD Camera (DCAM710).
 */
 
+#ifdef DCAM_710
 #include "Vzense_define.h"
+#else
+#include "DCAM710/Vzense_define_710.h"
+#endif
 
 /**
 * @brief 		Initializes the API on the device. This function must be invoked before any other Vzense APIs.
@@ -704,5 +708,21 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetSDKVersion(char* version, int length);
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetMappedPointDepthToRGB(const PsDeviceHandle device, const uint32_t sessionIndex, const PsDepthVector3 depthPoint, const PsVector2u16 rgbSize, PsVector2u16* pPosInRGB);
+
+/**
+* @brief		Reboot the camera.
+* @param[in]	device			The handle of the device on which to enable or disable the feature.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_RebootCamera(PsDeviceHandle device, uint32_t sessionIndex);
+
+/**
+* @brief		Enables or disables the legacy algorithmic,and default value is disabled.
+* @param[in]	device			The handle of the device on which to enable or disable the feature.
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetLegacyAlgorithmicEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool enabled);
 
 #endif /* VZENSE_API_710_H */

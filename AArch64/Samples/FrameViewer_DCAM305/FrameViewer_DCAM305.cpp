@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-#include "Vzense_api2.h"
+#include "DCAM305/Vzense_api_305.h"
 #include <thread>
 
 using namespace std;
@@ -17,11 +17,7 @@ static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, c
 	Point2d pointxy(width / 2, height / 2);
 	int val = dispImg.at<ushort>(pointxy);
 	char text[20];
-#ifdef _WIN32
-	sprintf_s(text, "%d", val);
-#else
 	snprintf(text, sizeof(text), "%d", val);
-#endif
 	dispImg.convertTo(dispImg, CV_8U, 255.0 / slope);
 	applyColorMap(dispImg, dispImg, cv::COLORMAP_RAINBOW);
 	int color;

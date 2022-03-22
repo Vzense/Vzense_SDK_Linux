@@ -3,14 +3,10 @@
 #include <iostream>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-#include "Vzense_api2.h"
+#include "DCAM560/Vzense_api_560.h"
 #include <thread>
-#ifdef _WIN32
-#include <windows.system.h>
-#else
 #include <sys/timeb.h>
-#endif
-
+ 
 #define FPS
 #define FPS_LEN 100
 using namespace std;
@@ -18,9 +14,6 @@ using namespace cv;
 
 #ifdef FPS
 
-#ifdef _WIN32
-SYSTEMTIME sys;
-#endif
 long delayT = 0;
 
 int countof_loop_tof = 0;
@@ -57,11 +50,7 @@ static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, c
 	Point2d pointxy(width / 2, height / 2);
 	int val = dispImg.at<ushort>(pointxy);
 	char text[20];
-#ifdef _WIN32
-	sprintf_s(text, "%d", val);
-#else
 	snprintf(text, sizeof(text), "%d", val);
-#endif
 	dispImg.convertTo(dispImg, CV_8U, 255.0 / slope);
 	applyColorMap(dispImg, dispImg, cv::COLORMAP_RAINBOW);
 	int color;
@@ -76,10 +65,6 @@ static void Opencv_Depth(uint32_t slope, int height, int width, uint8_t*pData, c
 
 int main(int argc, char *argv[])
 {
-#ifndef DCAM_560
-	cout << "DCAM is not 560" << endl;
-	return 0;
-#else
 	PsReturnStatus status;
 	uint32_t deviceIndex = 0;
 	uint32_t deviceCount = 0;
@@ -496,14 +481,9 @@ GET:
 
 #ifdef FPS
 
-#ifdef _WIN32
-		GetLocalTime(&sys);
-		long dwEnd = sys.wMilliseconds;
-#else
 		struct  timeb   stTimeb;
 		ftime(&stTimeb);
 		long dwEnd = stTimeb.millitm;
-#endif
 		long timedelay = dwEnd - delayT;
 		delayT = dwEnd;
 		if (timedelay < 0) {
@@ -571,11 +551,7 @@ GET:
 						if (fps_wdr1 != 0)
 						{
 							char fps[20];
-#ifdef _WIN32
-							sprintf_s(fps, "FPS: %d", fps_wdr1);
-#else
 							snprintf(fps, sizeof(fps), "FPS: %d", fps_wdr1);
-#endif
 							putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
 						}
 #endif
@@ -598,11 +574,7 @@ GET:
 						if (fps_wdr2 != 0)
 						{
 							char fps[20];
-#ifdef _WIN32
-							sprintf_s(fps, "FPS: %d", fps_wdr2);
-#else
 							snprintf(fps, sizeof(fps), "FPS: %d", fps_wdr2);
-#endif
 							putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
 						}
 #endif
@@ -625,11 +597,7 @@ GET:
 						if (fps_wdr3 != 0)
 						{
 							char fps[20];
-#ifdef _WIN32
-							sprintf_s(fps, "FPS: %d", fps_wdr3);
-#else
 							snprintf(fps, sizeof(fps), "FPS: %d", fps_wdr3);
-#endif
 							putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
 						}
 #endif
@@ -653,11 +621,7 @@ GET:
 					if (fps_tof != 0)
 					{
 						char fps[20];
-#ifdef _WIN32
-						sprintf_s(fps, "FPS: %d", fps_tof);
-#else
 						snprintf(fps, sizeof(fps), "FPS: %d", fps_tof);
-#endif
 						putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
 					}
 #endif
@@ -696,11 +660,7 @@ GET:
 				if (fps_ir != 0)
 				{
 					char fps[20];
-#ifdef _WIN32
-					sprintf_s(fps, "FPS: %d", fps_ir);
-#else
 					snprintf(fps, sizeof(fps), "FPS: %d", fps_ir);
-#endif
 					putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(255, 255, 255));
 				}
 #endif
@@ -756,11 +716,7 @@ GET:
 				if (fps_tof != 0)
 				{
 					char fps[20];
-#ifdef _WIN32
-					sprintf_s(fps, "FPS: %d", fps_tof);
-#else
 					snprintf(fps, sizeof(fps), "FPS: %d", fps_tof);
-#endif
 					putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
 				}
 #endif
@@ -796,11 +752,7 @@ GET:
 				if (fps_rgb != 0)
 				{
 					char fps[20];
-#ifdef _WIN32
-					sprintf_s(fps, "FPS: %d", fps_rgb);
-#else
 					snprintf(fps, sizeof(fps), "FPS: %d", fps_rgb);
-#endif
 					putText(imageMat, fps, Point2d(10, 20), FONT_HERSHEY_DUPLEX, 0.5, Scalar(0, 0, 0));
 				}
 #endif
@@ -1242,7 +1194,6 @@ GET:
 	status = Ps2_Shutdown();
 	cout << "Shutdown status: " << status << endl;
 	cv::destroyAllWindows();
-#endif
 	return 0;
 }
 
