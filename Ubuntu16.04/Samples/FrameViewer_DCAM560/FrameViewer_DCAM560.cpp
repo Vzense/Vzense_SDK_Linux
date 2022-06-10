@@ -79,6 +79,8 @@ int main(int argc, char *argv[])
 	PsWDROutputMode wdrMode = { PsWDRTotalRange_Two, PsNearRange, 1, PsFarRange, 1, PsUnknown, 1 };
 	bool f_bWDRMode = false;
 	bool bWDRStyle = true;
+	bool f_bConfidence = false;
+
 	status = Ps2_Initialize();
 	if (status != PsReturnStatus::PsRetOK)
 	{
@@ -454,7 +456,12 @@ GET:
 	cout << "                             2: 640*480" << endl;
 	cout << "Q/q: Enable or disable the mapped RGB in Depth space" << endl;
 	cout << "L/l: Enable or disable the mapped Depth in RGB space" << endl;
-	cout << "V/v: Enable or disable the WDR depth fusion feature " << endl;
+	cout << "V/v: Enable or disable the WDR depth fusion feature" << endl;
+	cout << "C/c: Enable or disable the ConfidenceFilter" << endl;
+	cout << "F/f: Set the ConfidenceFilter Threshold" << endl;
+	cout << "H/h: Set the WDRConfidenceFilter Threshold in DataMode(PsWDR_Depth)" << endl;
+	cout << "B/b: Enable or disable the RGB manual exposure" << endl;
+	cout << "N/n: Set the RGB absolute exposure, in [1,4000] and the unit is 100us" << endl;
 	cout << "Esc: Program quit " << endl;
 	cout << "--------------------------------------------------------------------" << endl;
 	cout << "--------------------------------------------------------------------\n" << endl;
@@ -1076,7 +1083,7 @@ GET:
 			}
 			else
 			{
-				cout << "Set background threshold error,check if the datamode is WDR mode" << endl;
+				cout << "Set background threshold error,check if the datamode is WDR mode or the confidence filter is opened" << endl;
 			}
 		}
 
@@ -1184,6 +1191,90 @@ GET:
 			{
 				cout << "Set Mapper DepthToRGB " << (f_bMappedRGB ? "Enabled." : "Disabled.") << endl;
 				f_bMappedRGB = !f_bMappedRGB;
+			}
+		}
+		else if (key == 'C' || key == 'c')
+		{
+			status = Ps2_SetConfidenceFilterEnabled(deviceHandle, sessionIndex, f_bConfidence);
+			if (PsRetOK == status)
+			{
+				cout << "Set Confidence Filter " << (f_bConfidence ? "true" : "false") << endl;
+			}
+			else
+			{
+				cout << "Set Confidence Filter failed, status:" << status << endl;
+			}
+			f_bConfidence = !f_bConfidence;
+		}
+		else if (key == 'F' || key == 'f')
+		{
+			static uint16_t conthreshold = 0;
+			conthreshold += 10;
+			if (conthreshold > 300)
+				conthreshold = 0;
+
+			status = Ps2_SetConfidenceFilterThreshold(deviceHandle, sessionIndex, conthreshold);
+
+			if (PsRetOK == status)
+			{
+				cout << "Set Confidence Filter Threshold  value: " << conthreshold << endl;
+			}
+			else
+			{
+				cout << "Set Confidence Filter Threshold failed, status:" << status << endl;
+			}
+		}
+		else if (key == 'H' || key == 'h')
+		{
+			static PsWDRConfidenceThreshold  conthreshold = { 0 };
+			conthreshold.threshold1 += 10;
+			if (conthreshold.threshold1 > 100)
+				conthreshold.threshold1 = 0;
+			conthreshold.threshold2 += 20;
+			if (conthreshold.threshold2 > 300)
+				conthreshold.threshold2 = 0;
+			conthreshold.threshold3 += 30;
+			if (conthreshold.threshold3 > 600)
+				conthreshold.threshold3 = 0;
+
+			status = Ps2_SetWDRConfidenceFilterThreshold(deviceHandle, sessionIndex, conthreshold);
+
+			if (PsRetOK == status)
+			{
+				cout << "Set WDR Confidence Filter Threshold value: " << status
+					<< "  ,  " << conthreshold.threshold1
+					<< "  ,  " << conthreshold.threshold2
+					<< "  ,  " << conthreshold.threshold3
+					<< endl;
+			}
+			else
+			{
+				cout << "Set WDR Confidence Filter Threshold failed, status:" << status << endl;
+			}
+		}
+		else if (key == 'B' || key == 'b')
+		{
+			static bool bmanualEnabled = true;
+
+			status = Ps2_SetRGBManualExposureEnabled(deviceHandle, sessionIndex, bmanualEnabled);
+			cout << "SetRGBExposureType: " << status << "  ,   " << bmanualEnabled << endl;
+			bmanualEnabled = !bmanualEnabled;
+		}
+		else if (key == 'N' || key == 'n')
+		{
+			static uint16_t expore = 1;
+			expore += 100;
+			if (expore > 4000)
+				expore = 1;
+			status = Ps2_SetRGBAbsoluteExposure(deviceHandle, sessionIndex, expore);
+
+			if (PsRetOK == status)
+			{
+				cout << "Ps2_SetRGBAbsoluteExposure success , value: " << expore << endl;
+			}
+			else
+			{
+				cout << "Ps2_SetRGBAbsoluteExposure failed, status: " << status << endl;
 			}
 		}
 	}

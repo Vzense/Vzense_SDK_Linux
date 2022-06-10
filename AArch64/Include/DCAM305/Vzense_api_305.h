@@ -324,7 +324,7 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_ConvertDepthToWorld(PsDeviceHandle device
 * @param[out] 	pWorldVector 	Pointer to a buffer in which to output the converted x, y, and z values of the world coordinates, measured in millimeters.
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
-VZENSE_C_API_EXPORT PsReturnStatus Ps2_ConvertDepthFrameToWorldVector(PsDeviceHandle device, uint32_t sessionIndex, const PsFrame& depthFrame, PsVector3f* pWorldVector);
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_ConvertDepthFrameToWorldVector(PsDeviceHandle device, uint32_t sessionIndex, const PsFrame depthFrame, PsVector3f* pWorldVector);
 
 /**
 * @brief		Enables or disables the syncronize feature.

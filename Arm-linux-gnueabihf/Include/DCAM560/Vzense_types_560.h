@@ -118,7 +118,8 @@ typedef struct
 	PsDepthRange   depthRange;    //!< The depth range mode of the current frame. Used only for depth frames.
 	uint16_t       width;		  //!< The width of the frame, in pixels.
 	uint16_t       height;        //!< The height of the frame, in pixels.
-	PsTimeStamp    timestamp;	  //!< The timestamp of the frame.
+	PsTimeStamp    timestamp;	  //!< The timestamp of the frame that decoded.
+	uint64_t       hardwaretimestamp;	//!< The timestamp of the camera.
 }PsFrame;
 
 /** 
@@ -157,17 +158,17 @@ typedef struct
 	uint32_t reserved : 24;
 }PsFrameReady;
 
-struct Device;
-typedef Device* PsDeviceHandle;
+typedef void* PsDeviceHandle;
 
 typedef struct
 {
 	int SessionCount;
 	PsDeviceType devicetype;
-	char uri[256]; //DeviceType:sn=xxxxx eg:DCAM305:sn=xxxxxxx
+	char uri[256];
 	char fw[50];
 	char alias[64];
 	PsConnectStatus status;
+	char ip[16]; 
 }PsDeviceInfo;
 
 typedef struct
@@ -217,6 +218,16 @@ typedef struct
 	uint16_t    pulseCount3;      //!< The pulseCount of the third range.
 	uint8_t	    option;
 }PsWDRPulseCount;
+
+/**
+* @brief WDR (Wide Dynamic Range) output mode settings (e.g. Near/Far range fusion).
+*/
+typedef struct
+{
+	uint16_t    threshold1;      //!< The confidence threshold of the first range.
+	uint16_t    threshold2;      //!< The confidence threshold of the second range.
+	uint16_t    threshold3;      //!< The confidence threshold of the third range.
+}PsWDRConfidenceThreshold;
 
 #pragma pack (pop)
 

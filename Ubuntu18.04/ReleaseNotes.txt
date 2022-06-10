@@ -1,6 +1,38 @@
-﻿V3.4.16
+﻿V3.5.4
+1. Modify the API 'Ps2_SetRGBExposure/Ps2_GetRGBExposure' to 'Ps2_SetRGBMaximumExposureTime/Ps2_GetRGBMaximumExposureTime'
+2. Add API
+    Ps2_SetRGBManualExposureEnabled
+	Ps2_GetRGBManualExposureEnabled
+	Ps2_SetRGBAbsoluteExposure 
+	Ps2_GetRGBAbsoluteExposure 
+	
+V3.5.3
+1. Remove the API 'Ps2_SetIrDistortionCorrectionEnabled' and 'Ps2_GetIrDistortionCorrectionEnabled', 
+   merge the function to 'Ps2_SetDepthDistortionCorrectionEnabled' and 'Ps2_GetDepthDistortionCorrectionEnabled'.
+   If recover the API 'XX_IrDistortionXXX', stil call the 'XX_DepthDistortionXXX'
+   
+	
+V3.5.2
+1. Optimize ConfidenceFilter code for DCAM560C
+2. Modify the logic for getting Intrinsic by 'Ps2_GetCameraParameters'.
+	To DCAM560C and DCAM550 with bigger FOV, the Intrinsic after anti distortion may be inconsistent with the raw Intrinsic
+	
+V3.5.1
+1. Modify the API and the struct for C 
+	Ps2_ConvertDepthFrameToWorldVector(PsDeviceHandle device, uint32_t sessionIndex, const PsFrame& depthFrame, PsVector3f* pWorldVector) -->
+    Ps2_ConvertDepthFrameToWorldVector(PsDeviceHandle device, uint32_t sessionIndex, const PsFrame depthFrame, PsVector3f* pWorldVector)
+ 
+	struct Device;
+	typedef Device* PsDeviceHandle  --> typedef void* PsDeviceHandle
+
+V3.5.0
+1. Add ConfidenceFilter for DCAM550/DCAM560C
+2. Add 'hardwaretimestamp' into 'PsFrame' for DCAM550/DCAM560C
+3. Add API Ps2_OpenDeviceByIP for the DCAMXX with network cable connection 
+4. Optimize code for 'Ps2_ReadNextFrame' with the return PsRetReadNextFrameTimeOut(-11)
+
+V3.4.16
 1. Optimize code with that has no '/dev/hidraw' in linux
-2. Modify the usage of SDK header files (in 'Include'),and previous usage is still available
 
 V3.4.15
 1. Optimize code and add protect

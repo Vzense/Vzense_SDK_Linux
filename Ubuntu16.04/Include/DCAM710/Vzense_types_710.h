@@ -118,7 +118,8 @@ typedef struct
 	PsDepthRange   depthRange;    //!< The depth range mode of the current frame. Used only for depth frames.
 	uint16_t       width;		  //!< The width of the frame, in pixels.
 	uint16_t       height;        //!< The height of the frame, in pixels.
-	PsTimeStamp    timestamp;	  //!< The timestamp of the frame.
+	PsTimeStamp    timestamp;	  //!< The timestamp of the frame that decoded.
+	uint64_t       hardwaretimestamp;	//!< The timestamp of the camera.
 }PsFrame;
 
 /** 
@@ -157,17 +158,17 @@ typedef struct
 	uint32_t reserved : 24;
 }PsFrameReady;
 
-struct Device;
-typedef Device* PsDeviceHandle;
+typedef void* PsDeviceHandle;
 
 typedef struct
 {
 	int SessionCount;
 	PsDeviceType devicetype;
-	char uri[256]; //DeviceType:sn=xxxxx eg:DCAM305:sn=xxxxxxx
+	char uri[256];
 	char fw[50];
 	char alias[64];
 	PsConnectStatus status;
+	char ip[16]; 
 }PsDeviceInfo;
 
 typedef struct

@@ -323,11 +323,11 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_ConvertDepthToWorld(PsDeviceHandle device
 * @param[out] 	pWorldVector 	Pointer to a buffer in which to output the converted x, y, and z values of the world coordinates, measured in millimeters.
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
-VZENSE_C_API_EXPORT PsReturnStatus Ps2_ConvertDepthFrameToWorldVector(PsDeviceHandle device, uint32_t sessionIndex, const PsFrame& depthFrame, PsVector3f* pWorldVector);
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_ConvertDepthFrameToWorldVector(PsDeviceHandle device, uint32_t sessionIndex, const PsFrame depthFrame, PsVector3f* pWorldVector);
 
 /**
-* @brief 		Enables or disables the depth distortion correction feature.
-* @param[in]	device			The handle of the device on which to enable or disable the feature. 
+* @brief 		Enables or disables the depth and ir distortion correction feature.
+* @param[in]	device			The handle of the device on which to enable or disable the feature.
 * @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
 * @param[in] 	bEnabled		Set to <code>true</code> to enable the feature or <code>false</code> to disable the feature.
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
@@ -335,31 +335,25 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_ConvertDepthFrameToWorldVector(PsDeviceHa
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetDepthDistortionCorrectionEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool bEnabled);
 
 /**
-* @brief 		Returns the Boolean value of whether the depth distortion correction feature is enabled or disabled.
-* @param[in]	device			The handle of the device on which to enable or disable the feature. 
+* @brief 		Returns the Boolean value of whether the depth and ir distortion correction feature is enabled or disabled.
+* @param[in]	device			The handle of the device on which to enable or disable the feature.
 * @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
 * @param[out]	bEnabled		Pointer to a variable in which to store the returned Boolean value.
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetDepthDistortionCorrectionEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool *bEnabled);
 
-/**
-* @brief 		Enables or disables the Ir distortion correction feature.
-* @param[in]	device			The handle of the device on which to enable or disable the feature.
-* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
-* @param[in] 	bEnabled		Set to <code>true</code> to enable the feature or <code>false</code> to disable the feature.
-* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
-*/
+/*
+Removed: merge the function to Ps2_SetDepthDistortionCorrectionEnabled,
+If recover the API 'XX_IrDistortionXXX', stil call the 'XX_DepthDistortionXXX'
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetIrDistortionCorrectionEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool bEnabled);
-
-/**
-* @brief 		Returns the Boolean value of whether the Ir distortion correction feature is enabled or disabled.
-* @param[in]	device			The handle of the device on which to enable or disable the feature. 
-* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
-* @param[out]	bEnabled		Pointer to a variable in which to store the returned Boolean value.
-* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
+
+/*
+Removed: merge the function to Ps2_GetDepthDistortionCorrectionEnabled
+If recover the API 'XX_IrDistortionXXX', stil call the 'XX_DepthDistortionXXX'
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetIrDistortionCorrectionEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool *bEnabled);
+*/
 
 /**
 * @brief		Enables or disables the ComputeRealDepth feature.
@@ -603,4 +597,48 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_RebootCamera(PsDeviceHandle device, uint3
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetLegacyAlgorithmicEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool enabled);
+
+/**
+* @brief		Enables or disables the ConfidenceFilter feature.
+* @param[in]	device			The handle of the device on which to enable or disable the feature. 
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[in]	bEnabled		Set to <code>true</code> to enable the feature or <code>false</code> to disable the feature.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetConfidenceFilterEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool enabled);
+
+/**
+* @brief 		Returns the Boolean value of whether the ConfidenceFilter feature is enabled or disabled.
+* @param[in]	device			The handle of the device on which to enable or disable the feature. 
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[out]	bEnabled		Pointer to a variable in which to store the returned Boolean value.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetConfidenceFilterEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool* enabled);
+
+/**
+* @brief 		Sets the ConfidenceFilter threshold value for the device specified by <code>device</code>. 
+* @param[in] 	device			The handle of the device on which to set the threshold. 
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[in] 	threshold		The threshold value to set. 0 will attempt to keep all point data but may not be accurate further away; 1000 is the max value.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetConfidenceFilterThreshold(PsDeviceHandle device, uint32_t sessionIndex, uint16_t threshold);
+
+/**
+* @brief 		Gets the ConfidenceFilter threshold value for the device specified by <code>device</code>. 
+* @param[in] 	device			The handle of the device on which to set the threshold. 
+* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
+* @param[in] 	threshold		The threshold value to set. 0 will attempt to keep all point data but may not be accurate further away; 1000 is the max value.
+* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetConfidenceFilterThreshold(PsDeviceHandle device, uint32_t sessionIndex, uint16_t* threshold);
+
+/**
+* @brief 		Opens the device specified by <code>ip</code>. The device must be subsequently closed using PsCloseDevice().
+* @param[in] 	ip			the ip of the device. See ::PsDeviceInfo for more information.
+* @param[out]	pDevices	the handle of the device on which to open.
+* @return: 		::PsRetOK	if the function succeeded, or one of the error values defined by ::PsReturnStatus.
+*/
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_OpenDeviceByIP(const char* ip, PsDeviceHandle* pDevice);
 #endif /* VZENSE_API_550_H */

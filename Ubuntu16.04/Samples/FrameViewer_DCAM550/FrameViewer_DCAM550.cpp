@@ -81,6 +81,8 @@ int main(int argc, char *argv[])
 	PsWDROutputMode wdrMode = { PsWDRTotalRange_Two, PsNearRange, 1, PsFarRange, 1, PsUnknown, 1 };
 	bool f_bWDRMode = false;
 	bool bWDRStyle = true;
+	bool f_bConfidence = true;
+
 	status = Ps2_Initialize();
 	if (status != PsReturnStatus::PsRetOK)
 	{
@@ -403,6 +405,8 @@ GET:
 	cout << "                    1: Output IR in 30 fps" << endl;
 	cout << "                    2: Output Depth and IR in 30 fps" << endl;
 	cout << "                    3: Output WDR_Depth in 30 fps" << endl;
+	cout << "C/c: Enable or disable the ConfidenceFilter in DataMode(DepthAndIR_30) " << endl;
+	cout << "F/f: set the ConfidenceFilter Threshold in DataMode(DepthAndIR_30)" << endl;
 	cout << "Esc: Program quit " << endl;
 	cout << "--------------------------------------------------------------------" << endl;
 	cout << "--------------------------------------------------------------------\n" << endl;
@@ -943,7 +947,7 @@ GET:
 			}
 			else
 			{
-				cout << "Set background threshold error,check if the datamode is WDR mode" << endl;
+				cout << "Set background threshold error,check if the datamode is WDR mode or the confidence filter is opened" << endl;
 			}
 		}		
 		
@@ -987,6 +991,37 @@ GET:
 			tatoldelay_wdr3 = 0;
 			fps_wdr3 = 0;
 #endif
+		}
+		else if (key == 'C' || key == 'c')
+		{
+			status = Ps2_SetConfidenceFilterEnabled(deviceHandle, sessionIndex, f_bConfidence);
+			if (PsRetOK == status)
+			{
+				cout << "Set Confidence Filter " <<(f_bConfidence  ? "true" : "false") << endl;
+			}
+			else
+			{
+				cout << "Set Confidence Filter failed, status:" << status << endl;
+			}
+			f_bConfidence = !f_bConfidence;
+		}
+		else if (key == 'F' || key == 'f')
+		{
+			static uint16_t conthreshold = 0;
+			conthreshold += 10;
+			if (conthreshold > 300)
+				conthreshold = 0;
+
+			status = Ps2_SetConfidenceFilterThreshold(deviceHandle, sessionIndex, conthreshold);
+
+			if (PsRetOK == status)
+			{
+				cout << "Set Confidence Filter Threshold  value: " << conthreshold << endl;
+			}
+			else
+			{
+				cout << "Set Confidence Filter Threshold failed, status:" << status <<endl;
+			}
 		}
 		else if (key == 27)	//ESC Pressed
 		{

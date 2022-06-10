@@ -349,7 +349,7 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_ConvertDepthToWorld(PsDeviceHandle device
 * @param[out] 	pWorldVector 	Pointer to a buffer in which to output the converted x, y, and z values of the world coordinates, measured in millimeters.
 * @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
-VZENSE_C_API_EXPORT PsReturnStatus Ps2_ConvertDepthFrameToWorldVector(PsDeviceHandle device, uint32_t sessionIndex, const PsFrame& depthFrame, PsVector3f* pWorldVector);
+VZENSE_C_API_EXPORT PsReturnStatus Ps2_ConvertDepthFrameToWorldVector(PsDeviceHandle device, uint32_t sessionIndex, const PsFrame depthFrame, PsVector3f* pWorldVector);
 
 /**
 * @brief		Enables or disables the syncronize feature.
@@ -370,7 +370,7 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetSynchronizeEnabled(PsDeviceHandle devi
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetSynchronizeEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool *bEnabled);
 
 /**
-* @brief 		Enables or disables the depth distortion correction feature.
+* @brief 		Enables or disables the depth and ir distortion correction feature.
 * @param[in]	device			The handle of the device on which to enable or disable the feature. 
 * @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
 * @param[in] 	bEnabled		Set to <code>true</code> to enable the feature or <code>false</code> to disable the feature.
@@ -379,7 +379,7 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetSynchronizeEnabled(PsDeviceHandle devi
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetDepthDistortionCorrectionEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool bEnabled);
 
 /**
-* @brief 		Returns the Boolean value of whether the depth distortion correction feature is enabled or disabled.
+* @brief 		Returns the Boolean value of whether the depth and ir distortion correction feature is enabled or disabled.
 * @param[in]	device			The handle of the device on which to enable or disable the feature. 
 * @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
 * @param[out]	bEnabled		Pointer to a variable in which to store the returned Boolean value.
@@ -387,23 +387,17 @@ VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetDepthDistortionCorrectionEnabled(PsDev
 */
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetDepthDistortionCorrectionEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool *bEnabled);
 
-/**
-* @brief 		Enables or disables the Ir distortion correction feature.
-* @param[in]	device			The handle of the device on which to enable or disable the feature.
-* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
-* @param[in] 	bEnabled		Set to <code>true</code> to enable the feature or <code>false</code> to disable the feature.
-* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
-*/
+/*
+Removed: merge the function to Ps2_SetDepthDistortionCorrectionEnabled,
+If recover the API 'XX_IrDistortionXXX', stil call the 'XX_DepthDistortionXXX'
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_SetIrDistortionCorrectionEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool bEnabled);
-
-/**
-* @brief 		Returns the Boolean value of whether the Ir distortion correction feature is enabled or disabled.
-* @param[in]	device			The handle of the device on which to enable or disable the feature. 
-* @param[in] 	sessionIndex	The index of the session. See ::Ps2_StartStream() & ::Ps2_StopStream() api for more information.
-* @param[out]	bEnabled		Pointer to a variable in which to store the returned Boolean value.
-* @return 		::PsRetOK		if the function succeeded, or one of the error values defined by ::PsReturnStatus.
 */
+
+/*
+Removed: merge the function to Ps2_GetDepthDistortionCorrectionEnabled
+If recover the API 'XX_IrDistortionXXX', stil call the 'XX_DepthDistortionXXX'
 VZENSE_C_API_EXPORT PsReturnStatus Ps2_GetIrDistortionCorrectionEnabled(PsDeviceHandle device, uint32_t sessionIndex, bool *bEnabled);
+*/
 
 /**
 * @brief 		Enables or disables the RGB distortion correction feature.
