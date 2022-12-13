@@ -5,7 +5,7 @@
 using namespace std;
 
 int main() {
-	cout << "---DeviceConnectByIP---\n";
+	cout << "---RGBManualExposureSet---\n";
 
 	uint32_t deviceCount;
 	PsDeviceInfo* pDeviceListInfo = NULL;
