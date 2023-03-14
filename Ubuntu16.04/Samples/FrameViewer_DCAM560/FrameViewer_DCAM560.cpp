@@ -17,28 +17,28 @@ using namespace cv;
 long delayT = 0;
 
 int countof_loop_tof = 0;
-long tatoldelay_tof = 0;
+long totaldelay_tof = 0;
 int fps_tof = 0;
 
 int countof_loop_rgb = 0;
-long tatoldelay_rgb = 0;
+long totaldelay_rgb = 0;
 int fps_rgb = 0;
 
 int countof_loop_ir = 0;
-long tatoldelay_ir = 0;
+long totaldelay_ir = 0;
 int fps_ir = 0;
 
 int countof_loop_wdr1 = 0;
-long tatoldelay_wdr1 = 0;
+long totaldelay_wdr1 = 0;
 int fps_wdr1 = 0;
 
 
 int countof_loop_wdr2 = 0;
-long tatoldelay_wdr2 = 0;
+long totaldelay_wdr2 = 0;
 int fps_wdr2 = 0;
 
 int countof_loop_wdr3 = 0;
-long tatoldelay_wdr3 = 0;
+long totaldelay_wdr3 = 0;
 int fps_wdr3 = 0;
 
 #endif
@@ -496,12 +496,12 @@ GET:
 		if (timedelay < 0) {
 			timedelay += 1000;
 		}
-		tatoldelay_tof += timedelay;
-		tatoldelay_rgb += timedelay;
-		tatoldelay_ir += timedelay;
-		tatoldelay_wdr1 += timedelay;
-		tatoldelay_wdr2 += timedelay;
-		tatoldelay_wdr3 += timedelay;
+		totaldelay_tof += timedelay;
+		totaldelay_rgb += timedelay;
+		totaldelay_ir += timedelay;
+		totaldelay_wdr1 += timedelay;
+		totaldelay_wdr2 += timedelay;
+		totaldelay_wdr3 += timedelay;
 
 #endif
 		if (status != PsRetOK)
@@ -547,10 +547,10 @@ GET:
 						countof_loop_wdr1++;
 						if (countof_loop_wdr1 >= FPS_LEN)
 						{
-							fps_wdr1 = 1000 * FPS_LEN / tatoldelay_wdr1;
+							fps_wdr1 = 1000 * FPS_LEN / totaldelay_wdr1;
 							//cout << fps_tof<<endl;
 							countof_loop_wdr1 = 0;
-							tatoldelay_wdr1 = 0;
+							totaldelay_wdr1 = 0;
 						}
 #endif
 						Opencv_Depth(wdrRange1Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
@@ -570,10 +570,10 @@ GET:
 						countof_loop_wdr2++;
 						if (countof_loop_wdr2 >= FPS_LEN)
 						{
-							fps_wdr2 = 1000 * FPS_LEN / tatoldelay_wdr2;
+							fps_wdr2 = 1000 * FPS_LEN / totaldelay_wdr2;
 							//cout << fps_tof<<endl;
 							countof_loop_wdr2 = 0;
-							tatoldelay_wdr2 = 0;
+							totaldelay_wdr2 = 0;
 						}
 #endif
 						Opencv_Depth(wdrRange2Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
@@ -593,10 +593,10 @@ GET:
 						countof_loop_wdr3++;
 						if (countof_loop_wdr3 >= FPS_LEN)
 						{
-							fps_wdr3 = 1000 * FPS_LEN / tatoldelay_wdr3;
+							fps_wdr3 = 1000 * FPS_LEN / totaldelay_wdr3;
 							//cout << fps_tof<<endl;
 							countof_loop_wdr3 = 0;
-							tatoldelay_wdr3 = 0;
+							totaldelay_wdr3 = 0;
 						}
 #endif
 						Opencv_Depth(wdrRange3Slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
@@ -617,10 +617,10 @@ GET:
 					countof_loop_tof++;
 					if (countof_loop_tof >= FPS_LEN)
 					{
-						fps_tof = 1000 * FPS_LEN / tatoldelay_tof;
+						fps_tof = 1000 * FPS_LEN / totaldelay_tof;
 						//cout << fps_tof<<endl;
 						countof_loop_tof = 0;
-						tatoldelay_tof = 0;
+						totaldelay_tof = 0;
 					}
 #endif
 					Opencv_Depth(slope, depthFrame.height, depthFrame.width, depthFrame.pFrameData, imageMat);
@@ -652,10 +652,10 @@ GET:
 				countof_loop_ir++;
 				if (countof_loop_ir >= FPS_LEN)
 				{
-					fps_ir = 1000 * FPS_LEN / tatoldelay_ir;
+					fps_ir = 1000 * FPS_LEN / totaldelay_ir;
 					//cout << fps_tof << endl;
 					countof_loop_ir = 0;
-					tatoldelay_ir = 0;
+					totaldelay_ir = 0;
 				}
 #endif
 				//Display the IR Image
@@ -690,10 +690,10 @@ GET:
 				countof_loop_tof++;
 				if (countof_loop_tof >= FPS_LEN)
 				{
-					fps_tof = 1000 * FPS_LEN / tatoldelay_tof;
+					fps_tof = 1000 * FPS_LEN / totaldelay_tof;
 					//cout << fps_tof << endl;
 					countof_loop_tof = 0;
-					tatoldelay_tof = 0;
+					totaldelay_tof = 0;
 				}
 #endif
 				if (f_bPointClound)
@@ -746,10 +746,10 @@ GET:
 				countof_loop_rgb++;
 				if (countof_loop_rgb >= FPS_LEN)
 				{
-					fps_rgb = 1000 * FPS_LEN / tatoldelay_rgb;
+					fps_rgb = 1000 * FPS_LEN / totaldelay_rgb;
 					//cout << fps_tof<<endl;
 					countof_loop_rgb = 0;
-					tatoldelay_rgb = 0;
+					totaldelay_rgb = 0;
 				}
 #endif
 				//Display the RGB Image
@@ -924,27 +924,27 @@ GET:
 			delayT = 0;
 
 			countof_loop_tof = 0;
-			tatoldelay_tof = 0;
+			totaldelay_tof = 0;
 			fps_tof = 0;
 
 			countof_loop_rgb = 0;
-			tatoldelay_rgb = 0;
+			totaldelay_rgb = 0;
 			fps_rgb = 0;
 
 			countof_loop_ir = 0;
-			tatoldelay_ir = 0;
+			totaldelay_ir = 0;
 			fps_ir = 0;
 
 			countof_loop_wdr1 = 0;
-			tatoldelay_wdr1 = 0;
+			totaldelay_wdr1 = 0;
 			fps_wdr1 = 0;
 
 			countof_loop_wdr2 = 0;
-			tatoldelay_wdr2 = 0;
+			totaldelay_wdr2 = 0;
 			fps_wdr2 = 0;
 
 			countof_loop_wdr3 = 0;
-			tatoldelay_wdr3 = 0;
+			totaldelay_wdr3 = 0;
 			fps_wdr3 = 0;
 #endif
 		}
@@ -1104,27 +1104,27 @@ GET:
 			delayT = 0;
 
 			countof_loop_tof = 0;
-			tatoldelay_tof = 0;
+			totaldelay_tof = 0;
 			fps_tof = 0;
 
 			countof_loop_rgb = 0;
-			tatoldelay_rgb = 0;
+			totaldelay_rgb = 0;
 			fps_rgb = 0;
 
 			countof_loop_ir = 0;
-			tatoldelay_ir = 0;
+			totaldelay_ir = 0;
 			fps_ir = 0;
 
 			countof_loop_wdr1 = 0;
-			tatoldelay_wdr1 = 0;
+			totaldelay_wdr1 = 0;
 			fps_wdr1 = 0;
 
 			countof_loop_wdr2 = 0;
-			tatoldelay_wdr2 = 0;
+			totaldelay_wdr2 = 0;
 			fps_wdr2 = 0;
 
 			countof_loop_wdr3 = 0;
-			tatoldelay_wdr3 = 0;
+			totaldelay_wdr3 = 0;
 			fps_wdr3 = 0;
 #endif
 		}
